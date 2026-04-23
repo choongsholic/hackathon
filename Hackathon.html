@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>UXI Hackathon</title>
 <style>
+  @font-face {
+    font-family: 'YouandiNewKrTitle';
+    font-weight: 700;
+    src: url('assets/fonts/YouandiNewKrTitle-Bold.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'YouandiNewKrTitle';
+    font-weight: 800;
+    src: url('assets/fonts/YouandiNewKrTitle-ExtraBold.ttf') format('truetype');
+  }
   :root {
     --c1: #F2A93A; /* orange */
     --c2: #F15A4A; /* coral red */
@@ -35,11 +45,27 @@
   .title {
     margin: 0;
     text-align: center;
+    font-family: 'YouandiNewKrTitle', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
     font-weight: 800;
     font-size: 72px;
     letter-spacing: -0.01em;
     line-height: 1;
+    user-select: none;
+    -webkit-user-select: none;
   }
+  .title .letter-push {
+    display: inline-block;
+    will-change: transform;
+    cursor: grab;
+    touch-action: none;
+    -webkit-user-drag: none;
+  }
+  .title .title-space {
+    display: inline-block;
+    width: 0.35em;
+  }
+  .title.is-dragging .letter-push,
+  .title .letter-push.is-dragging { cursor: grabbing; }
   .title .letter {
     display: inline-block;
     transform-origin: 50% 80%;
@@ -64,9 +90,9 @@
   /* ═══════════ CAROUSEL ═══════════ */
   .carousel {
     position: relative;
-    max-width: 1080px;
+    width: 100%;
     margin: 72px auto 0;
-    padding: 0 72px;
+    padding: 0;
   }
   .carousel-track {
     overflow: hidden;
@@ -78,7 +104,7 @@
   }
   .slide {
     flex: 0 0 100%;
-    padding: 0 8px;
+    padding: 0 76px; /* 화살표(좌우 8+56=64) 영역 확보 + 8px 여백 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -89,26 +115,29 @@
     font-weight: 700;
     margin: 0 0 14px;
     color: #fff;
+    overflow-wrap: anywhere;
   }
   .slide-desc {
     font-size: 14px;
     font-weight: 500;
     color: #fff;
-    margin: 0 0 40px;
+    margin: 0 0 32px;
     line-height: 1.5;
     max-width: 560px;
     white-space: pre-line;
+    overflow-wrap: anywhere;
   }
   .slide-stage {
     position: relative;
-    width: 600px;
-    max-width: 100%;
+    width: 100%;
+    max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
   .slide-thumb {
     position: relative;
+    top: 6px;
     z-index: 2;
     width: 100%;
     aspect-ratio: 16 / 10;
@@ -149,41 +178,43 @@
   .slide-clawd .pack-swing,
   .slide-clawd .shadow-walk { animation-name: none; }
 
-  /* idle 상태: 팔은 어깨를 피벗으로 '회전'해서 들어올림(관절 분리 없음), 썸네일도 동기화해 함께 상승 */
+  /* idle 상태: 팔은 어깨를 피벗으로 회전해 들어올림. 썸네일은 상승 + --stage-tilt 만큼 기울고, 양팔은 같은 방향으로 비대칭 오프셋 → 한쪽 팔 더 올라가고 반대쪽 덜 올라감 */
+  .slide-stage { --stage-tilt: 0deg; }  /* JS가 매 사이클 랜덤 주입 */
+
   .slide-clawd svg .arm-lift-l {
     transform-box: view-box;
-    transform-origin: 3px 6px;
-    animation: armLiftL 5s ease-in-out infinite;
+    transform-origin: 1px 10px;
+    animation: armLiftL 6.5s ease-in-out infinite;
   }
   .slide-clawd svg .arm-lift-r {
     transform-box: view-box;
-    transform-origin: 12px 6px;
-    animation: armLiftR 5s ease-in-out infinite;
+    transform-origin: 14px 10px;
+    animation: armLiftR 6.5s ease-in-out infinite;
   }
-  .slide-thumb { animation: thumbLift 5s ease-in-out infinite; }
+  .slide-thumb { animation: thumbLift 6.5s ease-in-out infinite; }
   @keyframes armLiftL {
     0%, 68%, 100% { transform: rotate(0deg); }
-    74%           { transform: rotate(8deg); }
-    80%           { transform: rotate(2deg); }
-    86%           { transform: rotate(10deg); }
-    92%           { transform: rotate(2deg); }
+    74%           { transform: rotate(calc(8deg  + var(--stage-tilt) * 0.35)); }
+    80%           { transform: rotate(calc(2deg  + var(--stage-tilt) * 0.1)); }
+    86%           { transform: rotate(calc(10deg + var(--stage-tilt) * 0.4)); }
+    92%           { transform: rotate(calc(2deg  + var(--stage-tilt) * 0.1)); }
   }
   @keyframes armLiftR {
     0%, 68%, 100% { transform: rotate(0deg); }
-    74%           { transform: rotate(-8deg); }
-    80%           { transform: rotate(-2deg); }
-    86%           { transform: rotate(-10deg); }
-    92%           { transform: rotate(-2deg); }
+    74%           { transform: rotate(calc(-8deg  + var(--stage-tilt) * 0.35)); }
+    80%           { transform: rotate(calc(-2deg  + var(--stage-tilt) * 0.1)); }
+    86%           { transform: rotate(calc(-10deg + var(--stage-tilt) * 0.4)); }
+    92%           { transform: rotate(calc(-2deg  + var(--stage-tilt) * 0.1)); }
   }
   @keyframes thumbLift {
-    0%, 68%, 100% { transform: translateY(0); }
-    74%           { transform: translateY(-5px); }
-    80%           { transform: translateY(-1px); }
-    86%           { transform: translateY(-6px); }
-    92%           { transform: translateY(-1px); }
+    0%, 68%, 100% { transform: translateY(0) rotate(0deg); }
+    74%           { transform: translateY(-5px) rotate(calc(var(--stage-tilt) * 0.6)); }
+    80%           { transform: translateY(-1px) rotate(calc(var(--stage-tilt) * 0.2)); }
+    86%           { transform: translateY(-6px) rotate(var(--stage-tilt)); }
+    92%           { transform: translateY(-1px) rotate(calc(var(--stage-tilt) * 0.3)); }
   }
 
-  /* 캐러셀 전환 중 — 다리/가방/그림자 걸음 애니메이션 재개 + 전체 스텝 바운스 (으쌰으쌰 override) */
+  /* 캐러셀 전환 중 — 다리/가방/그림자 걸음 애니메이션 재개 + 전체 스텝 바운스 */
   .carousel.is-walking .slide-stage { animation: stageHop 0.21s ease-in-out 0s 4 both; }
   @keyframes stageHop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
@@ -194,21 +225,28 @@
 
   .nav {
     position: absolute;
-    top: 55%;
+    /* top은 JS가 썸네일 센터로 계산해서 주입 (초기값은 폴백용) */
+    top: 40%;
     transform: translateY(-50%);
-    width: 40px; height: 40px;
+    width: 56px; height: 96px;  /* 시각 아이콘보다 큰 투명 히트 영역 — 모바일 터치 보장 */
     border: none;
     background: transparent;
     color: rgba(255,255,255,0.65);
     cursor: pointer;
-    font-size: 28px;
+    font-size: 36px;
     line-height: 1;
     transition: color 0.15s, transform 0.2s;
     display: flex; align-items: center; justify-content: center;
+    z-index: 10;
+    -webkit-tap-highlight-color: transparent;
   }
   .nav:hover { color: #fff; transform: translateY(-50%) scale(1.15); }
-  .nav.prev { left: 16px; }
-  .nav.next { right: 16px; }
+  .nav.prev { left: 8px; }
+  .nav.next { right: 8px; }
+
+  @media (max-width: 600px) {
+    .nav { width: 64px; height: 112px; font-size: 40px; }
+  }
 
   .dots {
     display: flex;
@@ -225,6 +263,19 @@
     transition: background 0.2s, width 0.2s;
   }
   .dot.active { background: #fff; width: 18px; border-radius: 3px; }
+
+  /* ═══════════ FIREWORKS (히어로 배경) ═══════════ */
+  #fw-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .hero .title,
+  .hero .subtitle,
+  .hero .carousel { position: relative; z-index: 1; }
 
   /* ═══════════ ITEM LIST ═══════════ */
   .list {
@@ -290,19 +341,22 @@
   }
 
   @media (max-width: 900px) {
-    .title { font-size: 52px; }
     .grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 600px) {
-    .title { font-size: 40px; }
+    .title { font-size: 64px; line-height: 1.02; }
+    .title .title-space { display: block; width: 100%; height: 0; }
+    .slide-title { font-size: 22px; }
+    .slide-desc { font-size: 13px; }
     .grid { grid-template-columns: 1fr; }
-    .carousel { padding: 0 48px; }
   }
+
 </style>
 </head>
 <body>
 
 <section class="hero">
+  <canvas id="fw-canvas" aria-hidden="true"></canvas>
   <h1 class="title" id="title"></h1>
   <p class="subtitle">The UXI team hosted a hackathon on March 13, 2026.</p>
 
@@ -340,7 +394,7 @@
   let lastColor = null;
   TITLE.split('').forEach((ch) => {
     if (ch === ' ') {
-      titleEl.insertAdjacentHTML('beforeend', '<span style="display:inline-block;width:0.35em">&nbsp;</span>');
+      titleEl.insertAdjacentHTML('beforeend', '<span class="title-space">&nbsp;</span>');
       lastColor = null;
       return;
     }
@@ -365,8 +419,116 @@
     span.style.setProperty('--r1',    r1 + 'deg');
     span.style.setProperty('--r2',    r2 + 'deg');
     span.style.setProperty('--r3',    r3 + 'deg');
-    titleEl.appendChild(span);
+    const push = document.createElement('span');
+    push.className = 'letter-push';
+    push.appendChild(span);
+    titleEl.appendChild(push);
   });
+
+  /* ── 물리: 호버 밀어내기 + 드래그 + 스프링 복귀 + 이웃 연쇄 반응 ── */
+  const phys = [...document.querySelectorAll('.title .letter-push')].map((el, i) => ({
+    el, idx: i,
+    x: 0, y: 0,        // rest로부터의 오프셋
+    vx: 0, vy: 0,
+    targetX: 0, targetY: 0,
+    dragging: false,
+    restCX: 0, restCY: 0,
+  }));
+  function refreshRest() {
+    phys.forEach(L => {
+      const r = L.el.getBoundingClientRect();
+      L.restCX = r.left + r.width / 2 - L.x;
+      L.restCY = r.top  + r.height / 2 - L.y;
+    });
+  }
+  window.addEventListener('resize', refreshRest);
+  setTimeout(refreshRest, 80);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refreshRest);
+
+  let mouseX = -9999, mouseY = -9999;
+  let dragging = null;
+  let dragHandleX = 0, dragHandleY = 0;
+
+  titleEl.addEventListener('pointerdown', e => {
+    const push = e.target.closest('.letter-push');
+    if (!push) return;
+    const L = phys.find(p => p.el === push);
+    if (!L) return;
+    refreshRest();
+    L.dragging = true;
+    dragging = L;
+    push.classList.add('is-dragging');
+    titleEl.classList.add('is-dragging');
+    dragHandleX = e.clientX - (L.restCX + L.x);
+    dragHandleY = e.clientY - (L.restCY + L.y);
+    L.targetX = L.x;
+    L.targetY = L.y;
+    try { push.setPointerCapture(e.pointerId); } catch (_) {}
+    e.preventDefault();
+  });
+  window.addEventListener('pointermove', e => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    if (dragging) {
+      dragging.targetX = e.clientX - dragHandleX - dragging.restCX;
+      dragging.targetY = e.clientY - dragHandleY - dragging.restCY;
+    }
+  });
+  function endDrag() {
+    if (!dragging) return;
+    dragging.el.classList.remove('is-dragging');
+    dragging.dragging = false;
+    dragging = null;
+    titleEl.classList.remove('is-dragging');
+  }
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+
+  const K_REST     = 0.10;  // 제자리 복귀 스프링 강도
+  const K_NEIGHBOR = 0.04;  // 이웃 알파벳 연쇄 커플링
+  const DAMP       = 0.86;  // 속도 감쇠 (1에 가까울수록 오래 출렁)
+  const HOVER_RANGE = 140;
+  const HOVER_MAX   = 36;   // 호버 시 목표 오프셋(px) 최대
+  (function tick() {
+    const n = phys.length;
+    const biasX = new Float32Array(n);
+    const biasY = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const L = phys[i];
+      if (L.dragging) continue;
+      const cx = L.restCX + L.x;
+      const cy = L.restCY + L.y;
+      const dx = cx - mouseX;
+      const dy = cy - mouseY;
+      const d  = Math.hypot(dx, dy) || 1;
+      if (d < HOVER_RANGE) {
+        const f = Math.pow(1 - d / HOVER_RANGE, 2) * HOVER_MAX;
+        biasX[i] = (dx / d) * f;
+        biasY[i] = (dy / d) * f;
+      }
+    }
+    for (let i = 0; i < n; i++) {
+      const L = phys[i];
+      if (L.dragging) {
+        // 드래그 중: 속도 기록(놓았을 때 관성으로 튐), 위치는 타겟으로 스냅
+        L.vx = L.targetX - L.x;
+        L.vy = L.targetY - L.y;
+        L.x  = L.targetX;
+        L.y  = L.targetY;
+      } else {
+        let ax = -K_REST * (L.x - biasX[i]);
+        let ay = -K_REST * (L.y - biasY[i]);
+        const Lp = phys[i - 1], Ln = phys[i + 1];
+        if (Lp) { ax += K_NEIGHBOR * (Lp.x - L.x); ay += K_NEIGHBOR * (Lp.y - L.y); }
+        if (Ln) { ax += K_NEIGHBOR * (Ln.x - L.x); ay += K_NEIGHBOR * (Ln.y - L.y); }
+        L.vx = (L.vx + ax) * DAMP;
+        L.vy = (L.vy + ay) * DAMP;
+        L.x += L.vx;
+        L.y += L.vy;
+      }
+      L.el.style.transform = `translate(${L.x.toFixed(2)}px, ${L.y.toFixed(2)}px)`;
+    }
+    requestAnimationFrame(tick);
+  })();
 
   /* 1.5초마다 전체 글자 색상 틱 (연속 동일색 방지) */
   setInterval(() => {
@@ -377,7 +539,7 @@
       last = color;
       span.style.color = color;
     });
-  }, 500);
+  }, 200);
 
   /* ───── 2. 아이템 데이터 (썸네일/URL은 추후 교체) ───── */
   // 캐릭터 종류:
@@ -396,127 +558,291 @@
     { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
   ];
 
-  /* 원본 clawd-working-carrying.svg 기반 + 가로 팔 제거 + 위로 뻗은 팔/손 추가 */
-  const CLAWD_SVG = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -25 45 41" preserveAspectRatio="xMidYEnd meet" overflow="visible">
-      <defs>
-        <style>
-          .step-a { animation: step 0.4s infinite ease-in-out; }
-          .step-b { animation: step 0.4s infinite ease-in-out; animation-delay: -0.2s; }
-          .pack-swing { transform-origin: 13px 8px; animation: pack-swing 0.4s infinite alternate ease-in-out; }
-          .shadow-walk { transform-origin: 7.5px 15.5px; animation: shadow-walk 0.4s infinite ease-in-out; }
-          .cap-sway { transform-origin: 6px 6.5px; animation: cap-sway 0.8s infinite alternate ease-in-out; }
-          .eyes-gaze { animation: eyes-gaze 2.5s infinite; }
-          .eyes-rect { transform-origin: 7.5px 9px; animation: eyes-blink-rush 2.5s infinite; }
-          @keyframes step         { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
-          @keyframes pack-swing   { 0% { transform: rotate(3deg); } 100% { transform: rotate(-3deg); } }
-          @keyframes shadow-walk  { 0%,50%,100% { transform: scale(1.03); opacity: 0.55; } 25%,75% { transform: scale(1); opacity: 0.5; } }
-          @keyframes cap-sway     { 0% { transform: rotate(-3deg); } 100% { transform: rotate(3deg); } }
-          @keyframes eyes-gaze    { 0%,15%,88%,100% { transform: translate(-1px,0); } 25%,80% { transform: translate(0,0); } }
-          @keyframes eyes-blink-rush {
-            0%,4%,100% { transform: scaleY(1); }
-            6%  { transform: scaleY(0.1); }
-            8%  { transform: scaleY(1); }
-            28% { transform: scaleY(0.1); }
-            31%,76% { transform: scaleY(1); }
-            78% { transform: scaleY(0.1); }
-            83% { transform: scaleY(1); }
-          }
-        </style>
-      </defs>
+  /* 클로드 캐릭터 6종 — 몸/팔/다리 형태는 동일, 모자·가방 컬러 & 헤드 이펙트로 다양화 */
+  const VARIANTS = [
+    // 0: classic blue (carrying)
+    { cap:['#5C9CE6','#3D7AC7','#FFD54F'], pack:['#5C9CE6','#3D7AC7','#2D5FA5','#FFD54F'], fx:null },
+    // 1: red/gold — sparkle (happy)
+    { cap:['#E65C5C','#B73B3B','#FFF176'], pack:['#FFC107','#FF9800','#E65100','#FFF176'], fx:'sparkle', fxColor:'#FFEB3B' },
+    // 2: green — sweat (working hard)
+    { cap:['#66BB6A','#388E3C','#FFEE58'], pack:['#66BB6A','#388E3C','#1B5E20','#FFF59D'], fx:'sweat',   fxColor:'#4FC3F7' },
+    // 3: purple — zz (sleepy)
+    { cap:['#AB47BC','#7B1FA2','#CE93D8'], pack:['#AB47BC','#7B1FA2','#4A148C','#E1BEE7'], fx:'zz',      fxColor:'#ECEFF1' },
+    // 4: yellow/pink — heart (love)
+    { cap:['#FFD54F','#F57F17','#FFFFFF'], pack:['#EC407A','#C2185B','#880E4F','#FFE082'], fx:'heart',   fxColor:'#FF80AB' },
+    // 5: teal/orange — star
+    { cap:['#26C6DA','#0097A7','#FFD54F'], pack:['#FF8A65','#E64A19','#BF360C','#FFCCBC'], fx:'star',    fxColor:'#FFD700' },
+  ];
 
-      <!-- Shadow -->
-      <rect class="shadow-walk" x="3" y="15" width="9" height="1" fill="#000" opacity="0.5"/>
+  function fxSvg(v) {
+    if (!v.fx) return '';
+    const c = v.fxColor;
+    const plus = col => `
+      <rect x="-0.5" y="-0.5" width="1" height="1" fill="${col}"/>
+      <rect x="-0.5" y="-1.5" width="1" height="1" fill="${col}"/>
+      <rect x="-0.5" y="0.5" width="1" height="1" fill="${col}"/>
+      <rect x="-1.5" y="-0.5" width="1" height="1" fill="${col}"/>
+      <rect x="0.5" y="-0.5" width="1" height="1" fill="${col}"/>`;
+    switch (v.fx) {
+      case 'sparkle':
+        return `
+          <g class="fx-sparkle"   transform="translate(-3 -9)">${plus(c)}</g>
+          <g class="fx-sparkle b" transform="translate(14 -8) scale(0.8)">${plus(c)}</g>
+          <g class="fx-sparkle c" transform="translate(6 -13) scale(0.7)">${plus(c)}</g>`;
+      case 'sweat':
+        return `
+          <g class="fx-sweat" transform="translate(-2 -2)" fill="${c}">
+            <rect x="0" y="0" width="1" height="1"/>
+            <rect x="-1" y="1" width="3" height="1"/>
+            <rect x="0" y="2" width="1" height="1"/>
+          </g>`;
+      case 'zz':
+        return `
+          <g class="fx-zz" transform="translate(11 -6)" fill="${c}">
+            <rect x="0" y="0" width="3" height="1"/>
+            <rect x="2" y="1" width="1" height="1"/>
+            <rect x="1" y="2" width="1" height="1"/>
+            <rect x="0" y="3" width="3" height="1"/>
+          </g>
+          <g class="fx-zz b" transform="translate(14 -10) scale(0.6)" fill="${c}">
+            <rect x="0" y="0" width="3" height="1"/>
+            <rect x="2" y="1" width="1" height="1"/>
+            <rect x="1" y="2" width="1" height="1"/>
+            <rect x="0" y="3" width="3" height="1"/>
+          </g>`;
+      case 'heart':
+        return `
+          <g class="fx-heart" transform="translate(11 -5)" fill="${c}">
+            <rect x="0" y="0" width="1" height="1"/>
+            <rect x="2" y="0" width="1" height="1"/>
+            <rect x="-1" y="1" width="5" height="1"/>
+            <rect x="0" y="2" width="3" height="1"/>
+            <rect x="1" y="3" width="1" height="1"/>
+          </g>`;
+      case 'star':
+        return `
+          <g class="fx-star" transform="translate(-3 -9)" fill="${c}">
+            <rect x="0" y="-1" width="1" height="1"/>
+            <rect x="-1" y="0" width="3" height="1"/>
+            <rect x="0" y="1" width="1" height="1"/>
+          </g>
+          <g class="fx-star b" transform="translate(14 -7) scale(0.8)" fill="${c}">
+            <rect x="0" y="-1" width="1" height="1"/>
+            <rect x="-1" y="0" width="3" height="1"/>
+            <rect x="0" y="1" width="1" height="1"/>
+          </g>`;
+    }
+    return '';
+  }
 
-      <!-- Raised arms — 외부 wrapper: 어깨 피벗 회전(으쌰으쌰), 내부: V 고정 각도 -->
-      <g class="arm-lift-l">
-        <g transform="rotate(-35 3 6)">
-          <rect x="2" y="-2" width="2" height="12" fill="#DE886D"/>
+  function makeClawdSvg(v) {
+    const [capMain, capDark, capAccent] = v.cap;
+    const [packMain, packDark, packDeep, packAccent] = v.pack;
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -25 45 41" preserveAspectRatio="xMidYEnd meet" overflow="visible">
+        <defs>
+          <style>
+            .step-a { animation: step 0.4s infinite ease-in-out; }
+            .step-b { animation: step 0.4s infinite ease-in-out; animation-delay: -0.2s; }
+            .pack-swing { transform-origin: 13px 8px; animation: pack-swing 0.4s infinite alternate ease-in-out; }
+            .shadow-walk { transform-origin: 7.5px 15.5px; animation: shadow-walk 0.4s infinite ease-in-out; }
+            .cap-sway { transform-origin: 6px 6.5px; animation: cap-sway 0.8s infinite alternate ease-in-out; }
+            .eyes-rect { transform-origin: 7.5px 9px; animation: eyes-blink-rush 2.5s infinite; }
+            .fx-sparkle   { animation: fxSparkle 1.5s infinite both; }
+            .fx-sparkle.b { animation-delay: 0.5s; }
+            .fx-sparkle.c { animation-delay: 1.0s; }
+            .fx-sweat     { animation: fxSweat 1.8s infinite both; transform-box: view-box; }
+            .fx-zz        { animation: fxZz 2.4s infinite both; transform-box: view-box; }
+            .fx-zz.b      { animation-delay: 1.1s; }
+            .fx-heart     { animation: fxHeart 1.8s infinite both; transform-box: view-box; }
+            .fx-star      { animation: fxStar 1.2s infinite step-end; }
+            .fx-star.b    { animation-delay: 0.5s; }
+            @keyframes step         { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
+            @keyframes pack-swing   { 0% { transform: rotate(3deg); } 100% { transform: rotate(-3deg); } }
+            @keyframes shadow-walk  { 0%,50%,100% { transform: scale(1.03); opacity: 0.55; } 25%,75% { transform: scale(1); opacity: 0.5; } }
+            @keyframes cap-sway     { 0% { transform: rotate(-3deg); } 100% { transform: rotate(3deg); } }
+            @keyframes eyes-blink-rush {
+              0%,4%,100% { transform: scaleY(1); }
+              6%  { transform: scaleY(0.1); }
+              8%  { transform: scaleY(1); }
+              28% { transform: scaleY(0.1); }
+              31%,76% { transform: scaleY(1); }
+              78% { transform: scaleY(0.1); }
+              83% { transform: scaleY(1); }
+            }
+            @keyframes fxSparkle {
+              0%, 55%, 100% { opacity: 0; }
+              10%, 30%      { opacity: 1; }
+            }
+            @keyframes fxSweat {
+              0%, 100% { opacity: 0; transform: translateY(-1px); }
+              15%      { opacity: 1; }
+              80%      { opacity: 0.8; transform: translateY(5px); }
+            }
+            @keyframes fxZz {
+              0%   { opacity: 0; transform: translate(0, 0) scale(0.7); }
+              25%  { opacity: 0.9; }
+              90%  { opacity: 0.8; transform: translate(3px, -5px) scale(1); }
+              100% { opacity: 0; transform: translate(5px, -8px) scale(1.1); }
+            }
+            @keyframes fxHeart {
+              0%   { opacity: 0; transform: translateY(3px) scale(0.5); }
+              25%  { opacity: 1; transform: translateY(0) scale(1); }
+              100% { opacity: 0; transform: translateY(-7px) scale(0.7); }
+            }
+            @keyframes fxStar {
+              0%, 55%, 100% { opacity: 0; }
+              20%           { opacity: 1; }
+            }
+          </style>
+        </defs>
+        <rect class="shadow-walk" x="3" y="15" width="9" height="1" fill="#000" opacity="0.5"/>
+        ${fxSvg(v)}
+        <g class="arm-lift-l">
+          <g transform="rotate(-35 1 6)">
+            <rect x="0" y="-2" width="2" height="12" fill="#DE886D"/>
+          </g>
         </g>
-      </g>
-      <g class="arm-lift-r">
-        <g transform="rotate(35 12 6)">
-          <rect x="11" y="-2" width="2" height="12" fill="#DE886D"/>
+        <g class="arm-lift-r">
+          <g transform="rotate(35 14 6)">
+            <rect x="13" y="-2" width="2" height="12" fill="#DE886D"/>
+          </g>
         </g>
-      </g>
-
-      <!-- Backpack -->
-      <g class="pack-swing">
-        <rect x="13" y="7"  width="4" height="6" fill="#5C9CE6"/>
-        <rect x="12" y="8"  width="5" height="4" fill="#5C9CE6"/>
-        <rect x="13" y="7"  width="4" height="2" fill="#3D7AC7"/>
-        <rect x="13" y="10" width="4" height="1" fill="#3D7AC7"/>
-        <rect x="13" y="12" width="4" height="1" fill="#2D5FA5"/>
-        <rect x="15" y="9"  width="1" height="1" fill="#FFD54F"/>
-      </g>
-
-      <!-- Legs -->
-      <g fill="#DE886D">
-        <rect class="step-a" x="3"  y="13" width="1" height="2"/>
-        <rect class="step-b" x="5"  y="13" width="1" height="2"/>
-        <rect class="step-b" x="9"  y="13" width="1" height="2"/>
-        <rect class="step-a" x="11" y="13" width="1" height="2"/>
-      </g>
-
-      <!-- Body -->
-      <rect x="2" y="6" width="11" height="7" fill="#DE886D"/>
-
-      <!-- Right strap of backpack -->
-      <rect x="13" y="7" width="1" height="4" fill="#3D7AC7"/>
-
-      <!-- Eyes -->
-      <g class="eyes-gaze">
-        <g class="eyes-rect" fill="#000">
-          <rect x="4"  y="8" width="1" height="2"/>
-          <rect x="10" y="8" width="1" height="2"/>
+        <g class="pack-swing">
+          <rect x="13" y="7"  width="4" height="6" fill="${packMain}"/>
+          <rect x="12" y="8"  width="5" height="4" fill="${packMain}"/>
+          <rect x="13" y="7"  width="4" height="2" fill="${packDark}"/>
+          <rect x="13" y="10" width="4" height="1" fill="${packDark}"/>
+          <rect x="13" y="12" width="4" height="1" fill="${packDeep}"/>
+          <rect x="15" y="9"  width="1" height="1" fill="${packAccent}"/>
         </g>
-      </g>
-
-      <!-- Tilted cap -->
-      <g class="cap-sway">
-        <g transform="rotate(-15, 6, 6.5)">
-          <rect x="1"  y="4.5" width="7" height="2" fill="#5C9CE6"/>
-          <rect x="-1" y="5.5" width="4" height="1" fill="#3D7AC7"/>
-          <rect x="4"  y="4.5" width="1" height="1" fill="#FFD54F"/>
+        <g fill="#DE886D">
+          <rect class="step-a" x="3"  y="13" width="1" height="2"/>
+          <rect class="step-b" x="5"  y="13" width="1" height="2"/>
+          <rect class="step-b" x="9"  y="13" width="1" height="2"/>
+          <rect class="step-a" x="11" y="13" width="1" height="2"/>
         </g>
-      </g>
-    </svg>
-  `;
+        <rect x="2" y="6" width="11" height="7" fill="#DE886D"/>
+        <rect x="13" y="7" width="1" height="4" fill="${packDark}"/>
+        <g class="eyes-gaze">
+          <g class="eyes-rect" fill="#000">
+            <rect x="4"  y="8" width="1" height="2"/>
+            <rect x="10" y="8" width="1" height="2"/>
+          </g>
+        </g>
+        <g class="cap-sway">
+          <g transform="rotate(-15, 6, 6.5)">
+            <rect x="1"  y="4.5" width="7" height="2" fill="${capMain}"/>
+            <rect x="-1" y="5.5" width="4" height="1" fill="${capDark}"/>
+            <rect x="4"  y="4.5" width="1" height="1" fill="${capAccent}"/>
+          </g>
+        </g>
+      </svg>`;
+  }
 
   /* ───── 3. Carousel 렌더 ───── */
   const slidesEl = document.getElementById('slides');
 
-  ITEMS.forEach((it) => {
+  ITEMS.forEach((it, i) => {
     const thumbInner = it.thumb ? `<img src="${it.thumb}" alt="${it.title}">` : 'Thumbnail';
+    const variant = VARIANTS[i % VARIANTS.length];
     slidesEl.insertAdjacentHTML('beforeend', `
       <div class="slide">
         <h2 class="slide-title">${it.title}</h2>
         <p class="slide-desc">${it.desc}</p>
         <div class="slide-stage">
           <div class="slide-thumb" data-url="${it.url}">${thumbInner}</div>
-          <div class="slide-clawd">${CLAWD_SVG}</div>
+          <div class="slide-clawd">${makeClawdSvg(variant)}</div>
         </div>
       </div>
     `);
   });
 
+  /* clawd 눈동자 마우스 추적 (slide별 SVG 좌표계 기준) */
+  window.addEventListener('pointermove', (e) => {
+    const mx = e.clientX, my = e.clientY;
+    document.querySelectorAll('.slide-clawd svg').forEach(svg => {
+      const eyes = svg.querySelector('.eyes-gaze');
+      if (!eyes) return;
+      const r  = svg.getBoundingClientRect();
+      const cx = r.left + r.width  * 0.5;
+      const cy = r.top  + r.height * 0.45;
+      const dx = mx - cx;
+      const dy = my - cy;
+      const d  = Math.hypot(dx, dy) || 1;
+      const s  = Math.min(1, d / 150);
+      const ux = dx / d;
+      const uy = dy / d;
+      const tx = ux * 1.1 * s;
+      // 위/아래 비대칭: 아래로는 얼굴 내 여유, 위로는 모자 간섭 고려하되 확실히 추적
+      const ty = (uy > 0 ? uy * 1.6 : uy * 1.2) * s;
+      eyes.setAttribute('transform', `translate(${tx.toFixed(2)} ${ty.toFixed(2)})`);
+    });
+  });
+
+  /* 무한 루프: 첫/마지막 슬라이드를 양끝에 클론 → 클론 도착 후 무전환 스냅 */
+  const firstClone = slidesEl.firstElementChild.cloneNode(true);
+  const lastClone  = slidesEl.lastElementChild.cloneNode(true);
+  slidesEl.appendChild(firstClone);
+  slidesEl.insertBefore(lastClone, slidesEl.firstElementChild);
+
   const carouselEl = document.querySelector('.carousel');
-  let cur = 0;
-  function go(i) {
-    cur = (i + ITEMS.length) % ITEMS.length;
-    slidesEl.style.transform = `translateX(-${cur * 100}%)`;
-    // 걸음걸이 바운스 (전환 duration 0.85s 내에 4스텝)
+  const SLIDE_TRANS = 'transform 0.85s cubic-bezier(0.34, 1.2, 0.64, 1)';
+  let cur = 1; // 첫 진짜 슬라이드 (앞 클론 다음)
+  slidesEl.style.transition = 'none';
+  slidesEl.style.transform  = `translateX(-${cur * 100}%)`;
+  void slidesEl.offsetWidth;
+  slidesEl.style.transition = SLIDE_TRANS;
+
+  let locked = false;
+  function step(delta) {
+    if (locked) return;
+    locked = true;
+    cur += delta;
+    slidesEl.style.transition = SLIDE_TRANS;
+    slidesEl.style.transform  = `translateX(-${cur * 100}%)`;
+    // 걸음걸이 바운스
     carouselEl.classList.remove('is-walking');
-    void carouselEl.offsetWidth; // reflow로 애니메이션 재시작
+    void carouselEl.offsetWidth;
     carouselEl.classList.add('is-walking');
-    clearTimeout(go._t);
-    go._t = setTimeout(() => carouselEl.classList.remove('is-walking'), 900);
+    clearTimeout(step._t);
+    step._t = setTimeout(() => {
+      locked = false;
+      carouselEl.classList.remove('is-walking');
+      // 클론 지점이면 무전환으로 실제 위치로 스냅
+      if (cur === ITEMS.length + 1) {
+        slidesEl.style.transition = 'none';
+        cur = 1;
+        slidesEl.style.transform = `translateX(-${cur * 100}%)`;
+        void slidesEl.offsetWidth;
+      } else if (cur === 0) {
+        slidesEl.style.transition = 'none';
+        cur = ITEMS.length;
+        slidesEl.style.transform = `translateX(-${cur * 100}%)`;
+        void slidesEl.offsetWidth;
+      }
+    }, 870);
   }
-  document.getElementById('prev').addEventListener('click', () => go(cur - 1));
-  document.getElementById('next').addEventListener('click', () => go(cur + 1));
+  // 각 슬라이드 스테이지에 -12~+12deg 랜덤 기울기 주입 (으쌰으쌰 피크에 적용됨)
+  function randomizeTilt() {
+    slidesEl.querySelectorAll('.slide-stage').forEach(s => {
+      s.style.setProperty('--stage-tilt', (Math.random() * 24 - 12).toFixed(1) + 'deg');
+    });
+  }
+  randomizeTilt();
+
+  let autoT = null;
+  function autoStart() {
+    clearInterval(autoT);
+    autoT = setInterval(() => { step(1); randomizeTilt(); }, 6500);
+  }
+  autoStart();
+
+  document.getElementById('prev').addEventListener('click', () => { step(-1); randomizeTilt(); autoStart(); });
+  document.getElementById('next').addEventListener('click', () => { step(1);  randomizeTilt(); autoStart(); });
   document.addEventListener('keydown', e => {
-    if (e.key === 'ArrowLeft')  go(cur - 1);
-    if (e.key === 'ArrowRight') go(cur + 1);
+    if (e.key === 'ArrowLeft')  { step(-1); randomizeTilt(); autoStart(); }
+    if (e.key === 'ArrowRight') { step(1);  randomizeTilt(); autoStart(); }
   });
 
   // 썸네일 클릭 → URL 새 창
@@ -533,9 +859,165 @@
   window.addEventListener('pointerup', e => {
     if (dragX === null) return;
     const dx = e.clientX - dragX;
-    if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1));
+    if (Math.abs(dx) > 40) { step(dx < 0 ? 1 : -1); randomizeTilt(); autoStart(); }
     dragX = null;
   });
+
+  // 화살표 top을 썸네일 수직 센터에 맞춤 (slide-thumb의 thumbLift 애니메이션이 있지만 base 좌표 기준)
+  function positionNav() {
+    const thumb = slidesEl.querySelector('.slide-thumb');
+    if (!thumb) return;
+    const tr = thumb.getBoundingClientRect();
+    const cr = carouselEl.getBoundingClientRect();
+    const center = (tr.top - cr.top) + tr.height / 2;
+    carouselEl.querySelectorAll('.nav').forEach(b => b.style.top = center + 'px');
+  }
+  requestAnimationFrame(positionNav);
+  window.addEventListener('resize', positionNav);
+  window.addEventListener('load', positionNav);
+
+  /* ───── 5. Fireworks (알파벳/숫자 폭죽) ───── */
+  (function() {
+    const canvas = document.getElementById('fw-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W = 0, H = 0;
+    function resize() {
+      const r = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width  = r.width  * dpr;
+      canvas.height = r.height * dpr;
+      W = r.width; H = r.height;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    }
+    resize();
+    requestAnimationFrame(resize);
+    setTimeout(resize, 120);
+    window.addEventListener('resize', resize);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(resize);
+
+    const CHARS = '0123456789';
+    const COLORS = ['#ffffff'];
+    const pick = a => a[(Math.random() * a.length) | 0];
+    const rc   = () => CHARS[(Math.random() * CHARS.length) | 0];
+
+    const rockets   = [];
+    const particles = [];
+    const G_ROCKET  = 0.07;
+    const G_PART    = 0.04;
+
+    function launch() {
+      const x = W * 0.1 + Math.random() * W * 0.8;
+      const apexY = H * 0.08 + Math.random() * H * 0.38;  // 터지는 고도
+      const targetDist = H - apexY;
+      const vy0 = -Math.sqrt(2 * G_ROCKET * targetDist);  // 물리식으로 도달 속도 역산
+      rockets.push({
+        x, y: H + 10,
+        vx: (Math.random() - 0.5) * 0.8,
+        vy: vy0,
+        color: pick(COLORS),
+        size: 9 + Math.random() * 3,
+        trail: [],
+        char: rc(),
+      });
+    }
+
+    function explode(x, y, baseColor) {
+      // 더 넓게 흩뿌리기: 입자는 더 적게, 속도는 더 빠르게
+      const count  = 16 + ((Math.random() * 24) | 0);   // 16~40
+      const radius = 130 + Math.random() * 240;         // 130~370
+      const size   = 9 + Math.random() * 5;
+      const multi  = Math.random() < 0.3;
+      const col2   = multi ? pick(COLORS) : null;
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        // 최소 속도 크게 올려 중앙 뭉침 방지
+        const speed = (1.0 + Math.random() * 1.2) * (radius / 50);
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 0.4,  // 위쪽으로 살짝 치우침
+          life: 55 + Math.random() * 50,
+          maxLife: 100,
+          color: multi && Math.random() < 0.5 ? col2 : baseColor,
+          size: size * (0.65 + Math.random() * 0.6),
+          char: rc(),
+        });
+      }
+    }
+
+    let nextLaunchAt = 0;
+    function scheduleLaunches(now) {
+      if (now < nextLaunchAt) return;
+      // 대부분 1발, 가끔 2~3연발
+      const burst = 1 + (Math.random() < 0.2 ? 1 : 0) + (Math.random() < 0.05 ? 1 : 0);
+      for (let i = 0; i < burst; i++) {
+        setTimeout(launch, i * (120 + Math.random() * 220));
+      }
+      nextLaunchAt = now + 1800 + Math.random() * 3200;  // 1.8~5초 간격
+    }
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    function frame() {
+      // 잔상 페이드
+      ctx.fillStyle = 'rgba(10, 10, 10, 0.22)';
+      ctx.fillRect(0, 0, W, H);
+
+      scheduleLaunches(performance.now());
+
+      // 로켓
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.x += r.vx;
+        r.y += r.vy;
+        r.vy += G_ROCKET;
+        // trail push는 3프레임마다 (간격 벌리기)
+        if ((r._tc = (r._tc || 0) + 1) % 3 === 0) {
+          r.trail.push({ x: r.x, y: r.y, char: rc() });
+          if (r.trail.length > 7) r.trail.shift();
+        }
+        for (let j = 0; j < r.trail.length; j++) {
+          const tp = r.trail[j];
+          ctx.globalAlpha = (j / r.trail.length) * 0.3;
+          ctx.fillStyle = r.color;
+          ctx.font = `${(r.size * 0.8).toFixed(0)}px "SF Mono", Menlo, monospace`;
+          ctx.fillText(tp.char, tp.x, tp.y);
+        }
+        if (Math.random() < 0.12) r.char = rc();
+        ctx.globalAlpha = 0.6;
+        ctx.fillStyle = '#fff';
+        ctx.font = `${r.size.toFixed(0)}px "SF Mono", Menlo, monospace`;
+        ctx.fillText(r.char, r.x, r.y);
+        if (r.vy >= 0) {
+          explode(r.x, r.y, r.color);
+          rockets.splice(i, 1);
+        }
+      }
+
+      // 폭발 입자 (글자는 띄엄띄엄 바뀌게 = 읽히는 카오스)
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += G_PART;
+        p.vx *= 0.985;
+        p.life--;
+        const a = p.life / p.maxLife;
+        if (a <= 0) { particles.splice(i, 1); continue; }
+        // 터진 직후엔 빠르게, 사라지며 천천히
+        if (Math.random() < 0.35 * a + 0.02) p.char = rc();
+        ctx.globalAlpha = Math.min(1, a) * 0.5;  // 전체적으로 흐리게
+        ctx.fillStyle = p.color;
+        ctx.font = `${p.size.toFixed(0)}px "SF Mono", Menlo, monospace`;
+        ctx.fillText(p.char, p.x, p.y);
+      }
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
 
   /* ───── 4. Item Lists 렌더 ───── */
   const gridEl = document.getElementById('grid');
@@ -549,6 +1031,7 @@
       </a>
     `);
   });
+
 </script>
 </body>
 </html>
