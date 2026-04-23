@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UXI Hackathon</title>
+<style>
+  :root {
+    --c1: #F2A93A; /* orange */
+    --c2: #F15A4A; /* coral red */
+    --c3: #F2C94C; /* yellow */
+    --c4: #2FB2B2; /* teal */
+    --c5: #ffffff;
+    --hero-bg: #0A0A0A;
+    --list-bg: #ffffff;
+    --muted: rgba(255,255,255,0.55);
+    --muted-dark: rgba(0,0,0,0.55);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'SF Pro Display',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+    background: var(--hero-bg);
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ═══════════ HERO ═══════════ */
+  .hero {
+    background: var(--hero-bg);
+    padding: 80px 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .title {
+    margin: 0;
+    text-align: center;
+    font-weight: 800;
+    font-size: 72px;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+  .title .letter {
+    display: inline-block;
+    transform-origin: 50% 80%;
+    animation: letterDance var(--dur, 3s) ease-in-out var(--delay, 0s) infinite;
+    will-change: transform;
+  }
+  @keyframes letterDance {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25%      { transform: translateY(var(--ty, -4px)) rotate(var(--r1, -3deg)); }
+    50%      { transform: translateY(calc(var(--ty, -4px) * -0.4)) rotate(var(--r2, 2deg)); }
+    75%      { transform: translateY(var(--ty, -4px)) rotate(var(--r3, -1deg)); }
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 500;
+    margin: 14px 0 0;
+    letter-spacing: 0.01em;
+  }
+
+  /* ═══════════ CAROUSEL ═══════════ */
+  .carousel {
+    position: relative;
+    max-width: 1080px;
+    margin: 72px auto 0;
+    padding: 0 72px;
+  }
+  .carousel-track {
+    overflow: hidden;
+    position: relative;
+  }
+  .slides {
+    display: flex;
+    transition: transform 0.85s cubic-bezier(0.34, 1.2, 0.64, 1);
+  }
+  .slide {
+    flex: 0 0 100%;
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .slide-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: #fff;
+  }
+  .slide-desc {
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    margin: 0 0 40px;
+    line-height: 1.5;
+    max-width: 560px;
+    white-space: pre-line;
+  }
+  .slide-stage {
+    position: relative;
+    width: 600px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .slide-thumb {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #141414;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s ease;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(255,255,255,0.22);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .slide-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .slide-thumb:hover { transform: translateY(-4px); }
+  /* 캐릭터 — 썸네일 바로 아래, 짧은 팔로 받침. 썸네일이 내려와 손에 닿는 구조 */
+  .slide-clawd {
+    position: relative;
+    z-index: 1;
+    margin-top: -125px; /* 몸통을 썸네일에 바짝 붙여 팔 노출 영역을 최소화 */
+    width: 200px;
+    height: 182px;      /* viewBox aspect 45:41 유지, 발 아래 빈 공간 제거 */
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+  }
+  .slide-clawd svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+  }
+
+  /* idle 상태: 걷기 관련 애니메이션 제거 (paused는 step-b의 -0.2s delay 때문에 중간 프레임에 고정됨 — 발이 뜸) */
+  .slide-clawd .step-a,
+  .slide-clawd .step-b,
+  .slide-clawd .pack-swing,
+  .slide-clawd .shadow-walk { animation-name: none; }
+
+  /* idle 상태: 팔은 어깨를 피벗으로 '회전'해서 들어올림(관절 분리 없음), 썸네일도 동기화해 함께 상승 */
+  .slide-clawd svg .arm-lift-l {
+    transform-box: view-box;
+    transform-origin: 3px 6px;
+    animation: armLiftL 5s ease-in-out infinite;
+  }
+  .slide-clawd svg .arm-lift-r {
+    transform-box: view-box;
+    transform-origin: 12px 6px;
+    animation: armLiftR 5s ease-in-out infinite;
+  }
+  .slide-thumb { animation: thumbLift 5s ease-in-out infinite; }
+  @keyframes armLiftL {
+    0%, 68%, 100% { transform: rotate(0deg); }
+    74%           { transform: rotate(8deg); }
+    80%           { transform: rotate(2deg); }
+    86%           { transform: rotate(10deg); }
+    92%           { transform: rotate(2deg); }
+  }
+  @keyframes armLiftR {
+    0%, 68%, 100% { transform: rotate(0deg); }
+    74%           { transform: rotate(-8deg); }
+    80%           { transform: rotate(-2deg); }
+    86%           { transform: rotate(-10deg); }
+    92%           { transform: rotate(-2deg); }
+  }
+  @keyframes thumbLift {
+    0%, 68%, 100% { transform: translateY(0); }
+    74%           { transform: translateY(-5px); }
+    80%           { transform: translateY(-1px); }
+    86%           { transform: translateY(-6px); }
+    92%           { transform: translateY(-1px); }
+  }
+
+  /* 캐러셀 전환 중 — 다리/가방/그림자 걸음 애니메이션 재개 + 전체 스텝 바운스 (으쌰으쌰 override) */
+  .carousel.is-walking .slide-stage { animation: stageHop 0.21s ease-in-out 0s 4 both; }
+  @keyframes stageHop { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+  .carousel.is-walking .slide-clawd .step-a { animation-name: step; }
+  .carousel.is-walking .slide-clawd .step-b { animation-name: step; }
+  .carousel.is-walking .slide-clawd .pack-swing { animation-name: pack-swing; }
+  .carousel.is-walking .slide-clawd .shadow-walk { animation-name: shadow-walk; }
+
+  .nav {
+    position: absolute;
+    top: 55%;
+    transform: translateY(-50%);
+    width: 40px; height: 40px;
+    border: none;
+    background: transparent;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    font-size: 28px;
+    line-height: 1;
+    transition: color 0.15s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav:hover { color: #fff; transform: translateY(-50%) scale(1.15); }
+  .nav.prev { left: 16px; }
+  .nav.next { right: 16px; }
+
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 36px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.20);
+    border: none; padding: 0;
+    cursor: pointer;
+    transition: background 0.2s, width 0.2s;
+  }
+  .dot.active { background: #fff; width: 18px; border-radius: 3px; }
+
+  /* ═══════════ ITEM LIST ═══════════ */
+  .list {
+    background: var(--list-bg);
+    color: #000;
+    padding: 80px 24px 64px;
+  }
+  .list-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+  .list-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 32px;
+    letter-spacing: -0.01em;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px 24px;
+  }
+  .card {
+    text-decoration: none;
+    color: #000;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+  .card:hover { transform: translateY(-4px); }
+  .card-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 16px 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .card-desc {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted-dark);
+    line-height: 1.5;
+    margin: 0;
+    white-space: pre-line;
+  }
+
+  /* ═══════════ FOOTER ═══════════ */
+  .site-footer {
+    background: var(--list-bg);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding: 28px 0;
+    text-align: center;
+    color: rgba(0,0,0,0.55);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  @media (max-width: 900px) {
+    .title { font-size: 52px; }
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .title { font-size: 40px; }
+    .grid { grid-template-columns: 1fr; }
+    .carousel { padding: 0 48px; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <h1 class="title" id="title"></h1>
+  <p class="subtitle">The UXI team hosted a hackathon on March 13, 2026.</p>
+
+  <div class="carousel">
+    <button class="nav prev" id="prev" aria-label="prev">‹</button>
+    <button class="nav next" id="next" aria-label="next">›</button>
+    <div class="carousel-track">
+      <div class="slides" id="slides"></div>
+    </div>
+  </div>
+</section>
+
+<section class="list">
+  <div class="list-inner">
+    <h2 class="list-title">Item Lists</h2>
+    <div class="grid" id="grid"></div>
+  </div>
+</section>
+
+<footer class="site-footer">UX Insight Team</footer>
+
+<script>
+  /* ───── 1. Title 알파벳 애니메이션 (각 글자 랜덤 delay/duration/swing) ───── */
+  const TITLE = "UXI Hackathon";
+  const COLOR_POOL = [
+    '#F2A93A', /* orange */
+    '#F15A4A', /* coral */
+    '#F2C94C', /* yellow */
+    '#2FB2B2', /* teal */
+    '#4A9EF1', /* blue */
+    '#B34AF1', /* purple */
+    '#FFFFFF', /* white */
+  ];
+  const titleEl = document.getElementById('title');
+  let lastColor = null;
+  TITLE.split('').forEach((ch) => {
+    if (ch === ' ') {
+      titleEl.insertAdjacentHTML('beforeend', '<span style="display:inline-block;width:0.35em">&nbsp;</span>');
+      lastColor = null;
+      return;
+    }
+    // 연속 동일 색 방지
+    let color;
+    do { color = COLOR_POOL[Math.floor(Math.random() * COLOR_POOL.length)]; } while (color === lastColor);
+    lastColor = color;
+
+    const dur   = (2.2 + Math.random() * 1.8).toFixed(2);
+    const delay = (Math.random() * 1.4).toFixed(2);
+    const ty    = -(2 + Math.random() * 5).toFixed(1);
+    const r1    = (-4 + Math.random() * 2).toFixed(1);
+    const r2    = (1 + Math.random() * 4).toFixed(1);
+    const r3    = (-2 + Math.random() * 3).toFixed(1);
+    const span  = document.createElement('span');
+    span.className = 'letter';
+    span.textContent = ch;
+    span.style.color = color;
+    span.style.setProperty('--dur',   dur + 's');
+    span.style.setProperty('--delay', delay + 's');
+    span.style.setProperty('--ty',    ty + 'px');
+    span.style.setProperty('--r1',    r1 + 'deg');
+    span.style.setProperty('--r2',    r2 + 'deg');
+    span.style.setProperty('--r3',    r3 + 'deg');
+    titleEl.appendChild(span);
+  });
+
+  /* 1.5초마다 전체 글자 색상 틱 (연속 동일색 방지) */
+  setInterval(() => {
+    let last = null;
+    document.querySelectorAll('.title .letter').forEach(span => {
+      let color;
+      do { color = COLOR_POOL[Math.floor(Math.random() * COLOR_POOL.length)]; } while (color === last);
+      last = color;
+      span.style.color = color;
+    });
+  }, 500);
+
+  /* ───── 2. 아이템 데이터 (썸네일/URL은 추후 교체) ───── */
+  // 캐릭터 종류:
+  //   carry    (clawd-working-carrying.svg)    — 일반 운반
+  //   sweat    (clawd-working-carrying.svg)    — 땀 흘리며 힘들게
+  //   annoyed  (clawd-react-annoyed.svg)       — 짜증내면서
+  //   juggling (clawd-working-juggling.svg)    — 통통 저글링
+  //   happy    (clawd-happy.svg)               — 신나게
+  //   sweep    (clawd-working-sweeping.svg)    — 밀면서
+  const ITEMS = [
+    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
+    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
+    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
+    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
+    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
+    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
+  ];
+
+  /* 원본 clawd-working-carrying.svg 기반 + 가로 팔 제거 + 위로 뻗은 팔/손 추가 */
+  const CLAWD_SVG = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -25 45 41" preserveAspectRatio="xMidYEnd meet" overflow="visible">
+      <defs>
+        <style>
+          .step-a { animation: step 0.4s infinite ease-in-out; }
+          .step-b { animation: step 0.4s infinite ease-in-out; animation-delay: -0.2s; }
+          .pack-swing { transform-origin: 13px 8px; animation: pack-swing 0.4s infinite alternate ease-in-out; }
+          .shadow-walk { transform-origin: 7.5px 15.5px; animation: shadow-walk 0.4s infinite ease-in-out; }
+          .cap-sway { transform-origin: 6px 6.5px; animation: cap-sway 0.8s infinite alternate ease-in-out; }
+          .eyes-gaze { animation: eyes-gaze 2.5s infinite; }
+          .eyes-rect { transform-origin: 7.5px 9px; animation: eyes-blink-rush 2.5s infinite; }
+          @keyframes step         { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
+          @keyframes pack-swing   { 0% { transform: rotate(3deg); } 100% { transform: rotate(-3deg); } }
+          @keyframes shadow-walk  { 0%,50%,100% { transform: scale(1.03); opacity: 0.55; } 25%,75% { transform: scale(1); opacity: 0.5; } }
+          @keyframes cap-sway     { 0% { transform: rotate(-3deg); } 100% { transform: rotate(3deg); } }
+          @keyframes eyes-gaze    { 0%,15%,88%,100% { transform: translate(-1px,0); } 25%,80% { transform: translate(0,0); } }
+          @keyframes eyes-blink-rush {
+            0%,4%,100% { transform: scaleY(1); }
+            6%  { transform: scaleY(0.1); }
+            8%  { transform: scaleY(1); }
+            28% { transform: scaleY(0.1); }
+            31%,76% { transform: scaleY(1); }
+            78% { transform: scaleY(0.1); }
+            83% { transform: scaleY(1); }
+          }
+        </style>
+      </defs>
+
+      <!-- Shadow -->
+      <rect class="shadow-walk" x="3" y="15" width="9" height="1" fill="#000" opacity="0.5"/>
+
+      <!-- Raised arms — 외부 wrapper: 어깨 피벗 회전(으쌰으쌰), 내부: V 고정 각도 -->
+      <g class="arm-lift-l">
+        <g transform="rotate(-35 3 6)">
+          <rect x="2" y="-2" width="2" height="12" fill="#DE886D"/>
+        </g>
+      </g>
+      <g class="arm-lift-r">
+        <g transform="rotate(35 12 6)">
+          <rect x="11" y="-2" width="2" height="12" fill="#DE886D"/>
+        </g>
+      </g>
+
+      <!-- Backpack -->
+      <g class="pack-swing">
+        <rect x="13" y="7"  width="4" height="6" fill="#5C9CE6"/>
+        <rect x="12" y="8"  width="5" height="4" fill="#5C9CE6"/>
+        <rect x="13" y="7"  width="4" height="2" fill="#3D7AC7"/>
+        <rect x="13" y="10" width="4" height="1" fill="#3D7AC7"/>
+        <rect x="13" y="12" width="4" height="1" fill="#2D5FA5"/>
+        <rect x="15" y="9"  width="1" height="1" fill="#FFD54F"/>
+      </g>
+
+      <!-- Legs -->
+      <g fill="#DE886D">
+        <rect class="step-a" x="3"  y="13" width="1" height="2"/>
+        <rect class="step-b" x="5"  y="13" width="1" height="2"/>
+        <rect class="step-b" x="9"  y="13" width="1" height="2"/>
+        <rect class="step-a" x="11" y="13" width="1" height="2"/>
+      </g>
+
+      <!-- Body -->
+      <rect x="2" y="6" width="11" height="7" fill="#DE886D"/>
+
+      <!-- Right strap of backpack -->
+      <rect x="13" y="7" width="1" height="4" fill="#3D7AC7"/>
+
+      <!-- Eyes -->
+      <g class="eyes-gaze">
+        <g class="eyes-rect" fill="#000">
+          <rect x="4"  y="8" width="1" height="2"/>
+          <rect x="10" y="8" width="1" height="2"/>
+        </g>
+      </g>
+
+      <!-- Tilted cap -->
+      <g class="cap-sway">
+        <g transform="rotate(-15, 6, 6.5)">
+          <rect x="1"  y="4.5" width="7" height="2" fill="#5C9CE6"/>
+          <rect x="-1" y="5.5" width="4" height="1" fill="#3D7AC7"/>
+          <rect x="4"  y="4.5" width="1" height="1" fill="#FFD54F"/>
+        </g>
+      </g>
+    </svg>
+  `;
+
+  /* ───── 3. Carousel 렌더 ───── */
+  const slidesEl = document.getElementById('slides');
+
+  ITEMS.forEach((it) => {
+    const thumbInner = it.thumb ? `<img src="${it.thumb}" alt="${it.title}">` : 'Thumbnail';
+    slidesEl.insertAdjacentHTML('beforeend', `
+      <div class="slide">
+        <h2 class="slide-title">${it.title}</h2>
+        <p class="slide-desc">${it.desc}</p>
+        <div class="slide-stage">
+          <div class="slide-thumb" data-url="${it.url}">${thumbInner}</div>
+          <div class="slide-clawd">${CLAWD_SVG}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  const carouselEl = document.querySelector('.carousel');
+  let cur = 0;
+  function go(i) {
+    cur = (i + ITEMS.length) % ITEMS.length;
+    slidesEl.style.transform = `translateX(-${cur * 100}%)`;
+    // 걸음걸이 바운스 (전환 duration 0.85s 내에 4스텝)
+    carouselEl.classList.remove('is-walking');
+    void carouselEl.offsetWidth; // reflow로 애니메이션 재시작
+    carouselEl.classList.add('is-walking');
+    clearTimeout(go._t);
+    go._t = setTimeout(() => carouselEl.classList.remove('is-walking'), 900);
+  }
+  document.getElementById('prev').addEventListener('click', () => go(cur - 1));
+  document.getElementById('next').addEventListener('click', () => go(cur + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  go(cur - 1);
+    if (e.key === 'ArrowRight') go(cur + 1);
+  });
+
+  // 썸네일 클릭 → URL 새 창
+  slidesEl.addEventListener('click', e => {
+    const t = e.target.closest('.slide-thumb');
+    if (!t) return;
+    const url = t.dataset.url;
+    if (url && url !== '#') window.open(url, '_blank', 'noopener');
+  });
+
+  // 드래그/스와이프
+  let dragX = null;
+  slidesEl.addEventListener('pointerdown', e => { dragX = e.clientX; });
+  window.addEventListener('pointerup', e => {
+    if (dragX === null) return;
+    const dx = e.clientX - dragX;
+    if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1));
+    dragX = null;
+  });
+
+  /* ───── 4. Item Lists 렌더 ───── */
+  const gridEl = document.getElementById('grid');
+  ITEMS.forEach(it => {
+    const thumb = it.thumb ? `<img src="${it.thumb}" alt="${it.title}">` : '';
+    gridEl.insertAdjacentHTML('beforeend', `
+      <a class="card" href="${it.url}" target="_blank" rel="noopener">
+        <div class="card-thumb">${thumb}</div>
+        <h3 class="card-title">${it.title}</h3>
+        <p class="card-desc">${it.desc}</p>
+      </a>
+    `);
+  });
+</script>
+</body>
+</html>
