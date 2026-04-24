@@ -1,24 +1,36 @@
 # Hackathon 프로젝트 컨텍스트
 
 ## 프로젝트 개요
-UXI Hackathon 결과물 소개 페이지. 단일 HTML 파일(`Hackathon.html`).
-- 히어로 영역: 타이틀 + 가로 캐러셀 (클로드 캐릭터가 아이템을 들고 있는 모습)
-- 하단 영역: 아이템 리스트 그리드 (3열)
-- 푸터: UX Insight Team
+UXI Hackathon 결과물 소개 페이지.
+- 메인: `index.html` (히어로 + 캐러셀 + 아이템 그리드)
+- 등록: `register.html` (아이템 등록 폼)
+- 백엔드: Supabase (DB + Storage)
+- 호스팅: Netlify (https://uxilog.netlify.app)
 
 ## 파일 구조
 ```
 hackathon/
-├── Hackathon.html
+├── index.html        (메인 페이지, 구 Hackathon.html)
+├── register.html     (아이템 등록 폼)
 ├── context.md
 └── assets/
-    ├── clawd/*.svg     (clawd-on-desk 원본 캐릭터 에셋 11종 — 참고용)
-    └── fonts/          (YouandiNewKrTitle-Bold/ExtraBold — 타이틀용)
+    ├── clawd/*.svg   (clawd-on-desk 원본 캐릭터 에셋 11종 — 참고용)
+    └── fonts/        (YouandiNewKrTitle-Bold/ExtraBold — 타이틀용)
 ```
 
-## GitHub
+## GitHub & 배포
 - Remote: `https://github.com/choongsholic/hackathon.git`
 - main 브랜치 사용. "해커톤 푸시" = add+commit+push, "해커톤 풀" = pull
+- Netlify GitHub 연동 → main 브랜치 푸시되면 자동 배포
+
+## Supabase
+- Project URL: `https://sczteqjqtzcklqsobkoh.supabase.co`
+- Publishable key는 코드에 박혀 있음 (공개 키이므로 OK, 시크릿 키 절대 커밋 금지)
+- 테이블: `items` (id, created_at, title, subtitle, desc, url, thumb_url, sort_order). RLS disabled.
+- 스토리지 버킷: `thumbnails` (public)
+- 등록: `register.html` → 이미지를 `thumbnails`에 업로드, `items`에 row insert
+- 조회: `index.html` → `items` 테이블에서 `sort_order` ASC, `created_at` ASC 정렬로 fetch
+- 어드민(비번 `MAU800`): 편집/삭제/순서 모두 Supabase에 직접 반영
 
 ---
 

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>아이템 등록 — UXI Hackathon</title>
+<style>
+  @font-face {
+    font-family: 'YouandiNewKrTitle';
+    font-weight: 800;
+    src: url('assets/fonts/YouandiNewKrTitle-ExtraBold.ttf') format('truetype');
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'SF Pro Display',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+    background: #fff;
+    color: #000;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 28px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .back-link {
+    color: #000;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.75;
+    transition: opacity 0.15s ease;
+  }
+  .back-link:hover { opacity: 1; }
+
+  .form-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 48px 24px 120px;
+  }
+  .form-title {
+    font-family: 'YouandiNewKrTitle', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+    font-weight: 800;
+    font-size: 40px;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .form-sub {
+    font-size: 14px;
+    color: rgba(0,0,0,0.55);
+    margin: 0 0 40px;
+    font-weight: 500;
+  }
+
+  .field { display: block; margin-bottom: 24px; }
+  .field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.003em;
+  }
+  .field-label .req { color: #F15A4A; margin-left: 2px; }
+  .field-input,
+  .field-textarea,
+  .field-select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 12px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 14px;
+    color: #000;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .field-input:focus,
+  .field-textarea:focus,
+  .field-select:focus {
+    outline: none;
+    border-color: #000;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+  }
+  .field-textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  .field-hint {
+    font-size: 12px;
+    color: rgba(0,0,0,0.45);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* 썸네일 업로드 */
+  .thumb-upload {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .thumb-upload-btn {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.03);
+    border: 1.5px dashed rgba(0,0,0,0.18);
+    color: rgba(0,0,0,0.65);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    text-align: center;
+  }
+  .thumb-upload-btn:hover {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.4);
+    color: #000;
+  }
+  .thumb-upload-btn.is-dragover {
+    background: rgba(0,0,0,0.09);
+    border-color: #000;
+    border-style: solid;
+    color: #000;
+  }
+  .thumb-preview {
+    position: relative;
+    width: 112px;
+    height: 70px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .thumb-preview[hidden] { display: none; }
+  .thumb-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .thumb-remove {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    border: none;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+    padding: 0;
+  }
+  .thumb-remove:hover { background: #000; }
+
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 32px;
+  }
+  .btn {
+    padding: 14px 28px;
+    border-radius: 12px;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.003em;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: #000;
+    border: 1.5px solid rgba(0,0,0,0.15);
+  }
+  .btn-ghost:hover { border-color: rgba(0,0,0,0.4); }
+  .btn-primary {
+    background: #000;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #222; }
+  .btn:active { transform: scale(0.98); }
+
+  @media (max-width: 600px) {
+    .form-title { font-size: 32px; }
+    .form-wrap { padding: 32px 20px 96px; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back-link" href="index.html">← 돌아가기</a>
+</div>
+
+<main class="form-wrap">
+  <h1 class="form-title">아이템 등록</h1>
+  <p class="form-sub">해커톤에서 만든 프로젝트를 등록해주세요.</p>
+
+  <form id="register-form" onsubmit="return handleSubmit(event)">
+    <label class="field">
+      <span class="field-label">프로젝트 제목<span class="req">*</span></span>
+      <input class="field-input" name="title" type="text" required placeholder="예: UX Research Dashboard">
+    </label>
+
+    <label class="field">
+      <span class="field-label">한 줄 소개 (히어로 영역)<span class="req">*</span></span>
+      <input class="field-input" name="subtitle" id="subtitle-input" type="text" required maxlength="120" placeholder="짧은 소개">
+    </label>
+
+    <label class="field">
+      <span class="field-label">설명<span class="req">*</span></span>
+      <textarea class="field-textarea" name="desc" required placeholder="어떤 프로젝트인지 간단히 소개해주세요."></textarea>
+    </label>
+
+    <div class="field">
+      <span class="field-label">썸네일 이미지</span>
+      <div class="thumb-upload">
+        <button type="button" class="thumb-upload-btn" id="thumb-upload-btn">
+          <span id="thumb-upload-label">이미지 선택 (PNG, JPG, WebP 등)</span>
+        </button>
+        <div class="thumb-preview" id="thumb-preview" hidden>
+          <img id="thumb-preview-img" alt="미리보기">
+          <button type="button" class="thumb-remove" id="thumb-remove" aria-label="이미지 제거">✕</button>
+        </div>
+      </div>
+      <input type="file" id="thumb-file" accept="image/*" hidden>
+      <span class="field-hint">선택 안 하면 기본 회색 배경이 표시됩니다. (자동으로 최대 1280px로 리사이즈됨)</span>
+    </div>
+
+    <label class="field">
+      <span class="field-label">프로젝트 링크<span class="req">*</span></span>
+      <input class="field-input" name="url" type="url" required placeholder="https://...">
+    </label>
+
+    <div class="form-actions">
+      <a class="btn btn-ghost" href="index.html">취소</a>
+      <button class="btn btn-primary" type="submit">등록</button>
+    </div>
+  </form>
+</main>
+
+<script>
+  /* ───── Supabase 클라이언트 ───── */
+  const SUPABASE_URL = 'https://sczteqjqtzcklqsobkoh.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_qA_GcBl_sk5Oj4a4a8c_OA_6x4kQVZ0';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* 이미지 업로드 + 리사이즈 */
+  let uploadedThumbDataUrl = '';
+  const fileInput = document.getElementById('thumb-file');
+  const uploadBtn = document.getElementById('thumb-upload-btn');
+  const uploadLabel = document.getElementById('thumb-upload-label');
+  const previewEl = document.getElementById('thumb-preview');
+  const previewImg = document.getElementById('thumb-preview-img');
+  const removeBtn = document.getElementById('thumb-remove');
+
+  async function processThumbFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      fileInput.value = '';
+      return;
+    }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file, 1280, 1280, 0.85);
+      uploadedThumbDataUrl = dataUrl;
+      previewImg.src = dataUrl;
+      previewEl.hidden = false;
+      const name = file.name.length > 24 ? file.name.slice(0, 24) + '…' : file.name;
+      uploadLabel.textContent = `✓ ${name}`;
+    } catch (err) {
+      alert('이미지를 불러오지 못했습니다.');
+    }
+  }
+
+  uploadBtn.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => processThumbFile(e.target.files[0]));
+
+  /* 드래그앤드롭 */
+  ['dragenter', 'dragover'].forEach(evt => {
+    uploadBtn.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      uploadBtn.classList.add('is-dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    uploadBtn.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      uploadBtn.classList.remove('is-dragover');
+    });
+  });
+  uploadBtn.addEventListener('drop', (e) => {
+    const file = e.dataTransfer?.files?.[0];
+    if (file) processThumbFile(file);
+  });
+  // 영역 밖 드롭 시 브라우저가 파일 여는 것 방지
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => e.preventDefault());
+  removeBtn.addEventListener('click', () => {
+    uploadedThumbDataUrl = '';
+    fileInput.value = '';
+    previewEl.hidden = true;
+    uploadLabel.textContent = '이미지 선택 (PNG, JPG, WebP 등)';
+  });
+
+  async function resizeImageToDataUrl(file, maxW, maxH, quality) {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = dataUrl;
+    });
+    let { width, height } = img;
+    if (width > maxW || height > maxH) {
+      const r = Math.min(maxW / width, maxH / height);
+      width = Math.round(width * r);
+      height = Math.round(height * r);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+    return canvas.toDataURL('image/jpeg', quality);
+  }
+
+  async function uploadThumbToStorage(dataUrl) {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+    const path = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { data, error } = await sb.storage.from('thumbnails')
+      .upload(path, blob, { contentType: blob.type, cacheControl: '3600' });
+    if (error) throw error;
+    const { data: urlData } = sb.storage.from('thumbnails').getPublicUrl(data.path);
+    return urlData.publicUrl;
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const origLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '등록 중…';
+    try {
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      let thumb_url = '';
+      if (uploadedThumbDataUrl) {
+        thumb_url = await uploadThumbToStorage(uploadedThumbDataUrl);
+      }
+      const { error } = await sb.from('items').insert({
+        title:    (data.title || '').trim() || 'Item',
+        subtitle: (data.subtitle || '').trim(),
+        desc:     (data.desc || '').trim(),
+        url:      (data.url || '').trim(),
+        thumb_url,
+        sort_order: Math.floor(Date.now() / 1000)
+      });
+      if (error) throw error;
+      alert('등록되었습니다.');
+      window.location.href = 'index.html';
+    } catch (err) {
+      console.error(err);
+      alert('등록 실패: ' + (err?.message || err));
+      submitBtn.disabled = false;
+      submitBtn.textContent = origLabel;
+    }
+    return false;
+  }
+</script>
+
+</body>
+</html>

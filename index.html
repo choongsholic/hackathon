@@ -81,17 +81,21 @@
   .subtitle {
     text-align: center;
     color: var(--muted);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    margin: 14px 0 0;
+    margin: 18px auto 0;
     letter-spacing: 0.01em;
+    max-width: calc(100% - 48px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* ═══════════ CAROUSEL ═══════════ */
   .carousel {
     position: relative;
     width: 100%;
-    margin: 72px auto 0;
+    margin: 60px auto 0;
     padding: 0;
   }
   .carousel-track {
@@ -108,14 +112,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end; /* 전체 콘텐츠(타이틀+desc+스테이지)를 하단 정렬 */
     text-align: center;
+    min-height: 560px;
   }
   .slide-title {
     font-size: 28px;
     font-weight: 700;
-    margin: 0 0 14px;
+    margin: 0 0 8px;
     color: #fff;
-    overflow-wrap: anywhere;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .slide-subtitle {
+    font-size: 15px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.64);
+    margin: 0 0 4px;
+    letter-spacing: 0.01em;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 1em;
+  }
+  .slide-subtitle.is-placeholder {
+    color: rgba(255, 255, 255, 0.4);
   }
   .slide-desc {
     font-size: 14px;
@@ -141,19 +165,56 @@
     z-index: 2;
     width: 100%;
     aspect-ratio: 16 / 10;
-    background: #141414;
     border-radius: 12px;
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.25s ease;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    flex-direction: column;
+    background: #141414;
+  }
+  .slide-thumb-body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: rgba(255,255,255,0.22);
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    overflow: hidden;
   }
-  .slide-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .slide-thumb-body img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .slide-thumb:hover { transform: translateY(-4px); }
+
+  /* 미니멀 크롬 브라우저 상단 프레임 (썸네일 공통) */
+  .thumb-chrome {
+    height: 26px;
+    background: #ECECEC;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 10px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(0,0,0,0.18);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+  }
+  .thumb-chrome-dots { display: flex; gap: 6px; }
+  .thumb-chrome-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    box-shadow: inset 0 0 0 0.5px rgba(0,0,0,0.08);
+  }
+  .thumb-chrome-dot.r { background: #FF5F57; }
+  .thumb-chrome-dot.y { background: #FEBC2E; }
+  .thumb-chrome-dot.g { background: #28C840; }
+  .thumb-chrome-url {
+    flex: 1;
+    height: 14px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.07);
+    border-radius: 7px;
+  }
   /* 캐릭터 — 썸네일 바로 아래, 짧은 팔로 받침. 썸네일이 내려와 손에 닿는 구조 */
   .slide-clawd {
     position: relative;
@@ -288,7 +349,7 @@
     margin: 0 auto;
   }
   .list-title {
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 800;
     margin: 0 0 32px;
     letter-spacing: -0.01em;
@@ -308,7 +369,8 @@
   .card-thumb {
     width: 100%;
     aspect-ratio: 16 / 10;
-    background: #000;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
     overflow: hidden;
   }
@@ -318,6 +380,9 @@
     font-weight: 700;
     margin: 16px 0 6px;
     letter-spacing: -0.005em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .card-desc {
     font-size: 13px;
@@ -328,8 +393,85 @@
     white-space: pre-line;
   }
 
+  /* ═══════════ REFLECTIONS (후기) ═══════════ */
+  .reviews {
+    background: var(--list-bg);
+    color: #000;
+    padding: 80px 24px 96px;
+  }
+  .reviews-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+  .reviews-title {
+    font-size: 34px;
+    font-weight: 800;
+    margin: 0 0 40px;
+    letter-spacing: -0.01em;
+  }
+  .bubble-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .bubble-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    max-width: 60%;
+  }
+  .bubble-row.left  { align-self: flex-start; }
+  .bubble-row.right { align-self: flex-end; flex-direction: row-reverse; }
+  .bubble-avatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bubble-avatar svg { width: 100%; height: 100%; display: block; }
+  .bubble {
+    --bg: #EFEFEF;
+    position: relative;
+    flex: 1 1 auto;
+    padding: 22px 26px;
+    border-radius: 22px;
+    font-size: 18px;
+    line-height: 1.65;
+    color: #1a1a1a;
+    font-weight: 500;
+    background: var(--bg);
+    letter-spacing: -0.003em;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  /* 꼬리 — 아바타 쪽을 향해 */
+  .bubble-row.left .bubble::before {
+    content: '';
+    position: absolute;
+    top: 22px; left: -8px;
+    width: 0; height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 10px solid var(--bg);
+  }
+  .bubble-row.right .bubble::before {
+    content: '';
+    position: absolute;
+    top: 22px; right: -8px;
+    width: 0; height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 10px solid var(--bg);
+  }
+
   /* ═══════════ FOOTER ═══════════ */
   .site-footer {
+    position: relative;
     background: var(--list-bg);
     border-top: 1px solid rgba(0,0,0,0.08);
     padding: 28px 0;
@@ -340,18 +482,204 @@
     letter-spacing: 0.02em;
   }
 
+  /* Admin 토글 링크 */
+  .admin-btn {
+    margin-left: 10px;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    opacity: 0.55;
+    padding: 0;
+    letter-spacing: 0.02em;
+  }
+  .admin-btn:hover { opacity: 1; text-decoration: underline; }
+  body.admin-on .admin-btn { color: #000; opacity: 1; font-weight: 600; }
+
+  /* Modal (로그인 / 편집 공용) */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .modal-backdrop.is-open { display: flex; }
+  .modal {
+    background: #fff;
+    color: #000;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 16px;
+    padding: 28px;
+    font-family: 'SF Pro Display',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
+  }
+  .modal.modal-lg { max-width: 560px; }
+  .modal h3 {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.005em;
+  }
+  .modal-field { display: block; margin-bottom: 14px; }
+  .modal-label {
+    display: block; font-size: 12px; font-weight: 700; margin-bottom: 6px;
+  }
+  .modal-input, .modal-textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid rgba(0,0,0,0.1);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #000;
+    background: #fff;
+  }
+  .modal-input:focus, .modal-textarea:focus {
+    outline: none;
+    border-color: #000;
+  }
+  .modal-textarea { min-height: 90px; resize: vertical; line-height: 1.6; }
+  .modal-thumb-upload {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .modal-thumb-btn {
+    flex: 1;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(0,0,0,0.03);
+    border: 1.5px dashed rgba(0,0,0,0.18);
+    color: rgba(0,0,0,0.65);
+    font: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .modal-thumb-btn:hover {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.4);
+    color: #000;
+  }
+  .modal-thumb-btn.is-dragover {
+    background: rgba(0,0,0,0.09);
+    border-color: #000;
+    border-style: solid;
+    color: #000;
+  }
+  .modal-thumb-preview {
+    position: relative;
+    width: 96px; height: 60px;
+    border-radius: 8px; overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .modal-thumb-preview[hidden] { display: none; }
+  .modal-thumb-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .modal-thumb-remove {
+    position: absolute; top: 3px; right: 3px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.75); color: #fff; border: none;
+    font-size: 10px; cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-thumb-remove:hover { background: #000; }
+  .modal-actions {
+    display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;
+  }
+  .modal-btn {
+    padding: 10px 20px; border-radius: 10px; border: none;
+    font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  }
+  .modal-btn.ghost { background: transparent; border: 1.5px solid rgba(0,0,0,0.15); color: #000; }
+  .modal-btn.primary { background: #000; color: #fff; }
+  .modal-btn.danger  { background: transparent; color: #F15A4A; }
+  .modal-error { color: #F15A4A; font-size: 12px; margin-top: 8px; min-height: 14px; }
+
+  /* Admin 모드 — 카드 편집 컨트롤 */
+  body.admin-on .card { cursor: default; position: relative; }
+  body.admin-on .card:hover { transform: none; }
+  .card-admin {
+    position: absolute;
+    top: 8px; right: 8px;
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.95);
+    padding: 4px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .card-admin-btn {
+    width: 28px; height: 28px;
+    border: none; background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #000;
+  }
+  .card-admin-btn svg { display: block; }
+  .card-admin-btn:hover { background: rgba(0,0,0,0.08); }
+  .card-admin-btn[data-act="del"]:hover { background: rgba(241, 90, 74, 0.12); color: #F15A4A; }
+  .card.is-empty .card-title,
+  .card.is-empty .card-desc { opacity: 0.4; }
+
+  /* + 아이템 등록 버튼 (풋터 우측) — 아웃라인 스타일 */
+  .fab-register {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    color: #000;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .fab-register svg { display: block; }
+  .fab-register:hover {
+    transform: translateY(-50%) scale(1.08);
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+  .fab-register:active { transform: translateY(-50%) scale(0.96); }
+
   @media (max-width: 900px) {
     .grid { grid-template-columns: 1fr 1fr; }
+    .bubble-row { max-width: 82%; }
   }
   @media (max-width: 600px) {
     .title { font-size: 64px; line-height: 1.02; }
     .title .title-space { display: block; width: 100%; height: 0; }
-    .slide-title { font-size: 22px; }
+    .slide-title { font-size: 22px; margin-bottom: 8px; }
     .slide-desc { font-size: 13px; }
+    .slide { min-height: 398px; padding: 0 56px; }
+    .slide-stage { margin-top: -6px; }
+    .carousel { margin-top: 44px; }
+    .hero { padding: 48px 0 0; }
     .grid { grid-template-columns: 1fr; }
+    .bubble-row { max-width: 94%; }
+    .bubble { font-size: 16px; padding: 18px 22px; }
+    .bubble-avatar { width: 32px; height: 32px; margin-top: 12px; }
   }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -376,9 +704,88 @@
   </div>
 </section>
 
-<footer class="site-footer">UX Insight Team</footer>
+<section class="reviews">
+  <div class="reviews-inner">
+    <h2 class="reviews-title">Reflections</h2>
+    <div class="bubble-list" id="bubble-list"></div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  UX Insight Team
+  <button class="admin-btn" id="admin-btn">Admin</button>
+  <a class="fab-register" href="register.html" aria-label="아이템 등록">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 2 V16 M2 9 H16" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+    </svg>
+  </a>
+</footer>
+
+<!-- Admin 로그인 모달 -->
+<div class="modal-backdrop" id="login-modal">
+  <div class="modal">
+    <h3>Admin 로그인</h3>
+    <form id="login-form">
+      <label class="modal-field">
+        <span class="modal-label">비밀번호</span>
+        <input class="modal-input" type="password" id="login-pw" autocomplete="current-password" autofocus>
+      </label>
+      <div class="modal-error" id="login-error"></div>
+      <div class="modal-actions">
+        <button class="modal-btn ghost" type="button" id="login-cancel">취소</button>
+        <button class="modal-btn primary" type="submit">로그인</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 아이템 편집 모달 -->
+<div class="modal-backdrop" id="edit-modal">
+  <div class="modal modal-lg">
+    <h3>아이템 편집</h3>
+    <label class="modal-field">
+      <span class="modal-label">프로젝트 제목</span>
+      <input class="modal-input" id="edit-title" type="text">
+    </label>
+    <label class="modal-field">
+      <span class="modal-label">한 줄 소개 (히어로 영역)</span>
+      <input class="modal-input" id="edit-subtitle" type="text" maxlength="120" placeholder="짧은 소개">
+    </label>
+    <label class="modal-field">
+      <span class="modal-label">설명</span>
+      <textarea class="modal-textarea" id="edit-desc"></textarea>
+    </label>
+    <div class="modal-field">
+      <span class="modal-label">썸네일 이미지</span>
+      <div class="modal-thumb-upload">
+        <button type="button" class="modal-thumb-btn" id="edit-thumb-btn">
+          <span id="edit-thumb-label">이미지 선택</span>
+        </button>
+        <div class="modal-thumb-preview" id="edit-thumb-preview" hidden>
+          <img id="edit-thumb-preview-img" alt="미리보기">
+          <button type="button" class="modal-thumb-remove" id="edit-thumb-remove" aria-label="제거">✕</button>
+        </div>
+      </div>
+      <input type="file" id="edit-thumb-file" accept="image/*" hidden>
+    </div>
+    <label class="modal-field">
+      <span class="modal-label">프로젝트 링크</span>
+      <input class="modal-input" id="edit-url" type="url" placeholder="https://...">
+    </label>
+    <div class="modal-actions">
+      <button class="modal-btn ghost"   type="button" id="edit-cancel">취소</button>
+      <button class="modal-btn primary" type="button" id="edit-save">저장</button>
+    </div>
+  </div>
+</div>
 
 <script>
+(async function init() {
+  /* ───── Supabase 클라이언트 ───── */
+  const SUPABASE_URL = 'https://sczteqjqtzcklqsobkoh.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_qA_GcBl_sk5Oj4a4a8c_OA_6x4kQVZ0';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   /* ───── 1. Title 알파벳 애니메이션 (각 글자 랜덤 delay/duration/swing) ───── */
   const TITLE = "UXI Hackathon";
   const COLOR_POOL = [
@@ -541,22 +948,54 @@
     });
   }, 200);
 
-  /* ───── 2. 아이템 데이터 (썸네일/URL은 추후 교체) ───── */
-  // 캐릭터 종류:
-  //   carry    (clawd-working-carrying.svg)    — 일반 운반
-  //   sweat    (clawd-working-carrying.svg)    — 땀 흘리며 힘들게
-  //   annoyed  (clawd-react-annoyed.svg)       — 짜증내면서
-  //   juggling (clawd-working-juggling.svg)    — 통통 저글링
-  //   happy    (clawd-happy.svg)               — 신나게
-  //   sweep    (clawd-working-sweeping.svg)    — 밀면서
-  const ITEMS = [
-    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
-    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
-    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
-    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
-    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
-    { title: 'Item', desc: 'dddddkkdkdkdkdkkfdksdskfdksfkdskdsf\ndddddkkdkdkdkdkkfdksdskfdksfkdskdsf', url: '#', thumb: '' },
-  ];
+  /* ───── 2. 아이템 데이터 + 서브타이틀 ───── */
+  const DEFAULT_SUBTITLE = 'The UXI team hosted a hackathon on March 13, 2026.';
+  const subtitleEl = document.querySelector('.subtitle');
+  subtitleEl.textContent = DEFAULT_SUBTITLE;
+
+  const MIN_SLOTS = 6;
+  function makeEmpty(i) {
+    return { id: null, title: `Item ${i + 1}`, subtitle: '', desc: '', url: '', thumb: '', empty: true };
+  }
+  function padToMin(items) {
+    const out = items.slice();
+    while (out.length < MIN_SLOTS) out.push(makeEmpty(out.length));
+    return out;
+  }
+  async function fetchItems() {
+    const { data, error } = await sb
+      .from('items')
+      .select('id, title, subtitle, desc, url, thumb_url, sort_order, created_at')
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: true });
+    if (error) {
+      console.error('아이템 로드 실패:', error);
+      return Array.from({ length: MIN_SLOTS }, (_, i) => makeEmpty(i));
+    }
+    const mapped = (data || []).map(r => ({
+      id: r.id,
+      title: r.title || 'Item',
+      subtitle: r.subtitle || '',
+      desc: r.desc || '',
+      url: r.url || '',
+      thumb: r.thumb_url || '',
+      sort_order: r.sort_order ?? 0,
+      empty: false
+    }));
+    return padToMin(mapped);
+  }
+  async function uploadThumbToStorage(dataUrl) {
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+    const path = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { data, error } = await sb.storage.from('thumbnails')
+      .upload(path, blob, { contentType: blob.type, cacheControl: '3600' });
+    if (error) throw error;
+    const { data: urlData } = sb.storage.from('thumbnails').getPublicUrl(data.path);
+    return urlData.publicUrl;
+  }
+  let ITEMS = await fetchItems();
 
   /* 클로드 캐릭터 6종 — 몸/팔/다리 형태는 동일, 모자·가방 컬러 & 헤드 이펙트로 다양화 */
   const VARIANTS = [
@@ -740,8 +1179,66 @@
       </svg>`;
   }
 
+  /* ───── 2.5 Reviews (후기) 렌더 ───── */
+  const REVIEWS = [
+    "팀원들이 다함께 모여, 바이브코딩을 통해 완결성을 가진 서비스를 개발해 본 의미있는 시간이었습니다. 정해진 시간 내 목표를 달성하기 위해 서로 가진 활용팁을 공유하고 막히는 부분에서 의견을 공유하며, 혼자 했더라면 막연했을 작업을 수월하게 할 수 있었습니다.",
+    "클로드에 대해 단순히 설명만 듣는 것보다 실습 중심으로 진행되다 보니 이해도가 훨씬 높았습니다. 직접 만들어보면서 AI 활용 감각을 빠르게 익힐 수 있었던 것 같고, 특히 팀원들과 함께 사용해보니 헷갈리는 것이나 고민 하는 과정에서 아이디어도 많이 나왔던 것 같습니다. 개인적으로는 클로드를 업무에 어떻게 연결할 수 있을지 구체적으로 고민해보는 계기가 됐습니다.",
+    "해커톤을 하면서 클로드를 처음 써보았는데 기대보다 더 체계적이고 디테일하게 기획부터 상세 실행까지 진행할 수 있어서 매우 신세계였습니다. 아이디어만 있다면 못할것이 없다는걸 다시 한번 깨닫게 되었습니다.",
+    "새로운 수단을 활용해서 어떻게, 얼마나 대단한 것을 만들어내야할지 걱정만 앞서다가 막상 시도해보니 생각보다 아주 쉽게, 상상했던 것 보다 더 대단한 결과가 나와서 놀랐습니다. 사람을 대체할 그날이 예상보다 아주 빨리 올 것 같아 저의 앞날이 걱정입니다….",
+    "해커톤을 통해 클로드를 활용한 바이브코딩을 해보니, 왜 이걸 그동안 '딸깍'이라고 표현했는지를 알게되었고, 왜 진작 해보지 않았을까라는 생각이 들었다. 그리고 한편으론, 한 때 개발자를 할 것은 아니지만 개발을 배워볼까라고 생각한 채 책을 사고 한장도 펴지 않았던 나 자신을 기억하며, 정말 잘 했던 일이라는 생각이 들었다.",
+    "IDE에 있는 새까만 화면을 보면 막연히 두렵고 무서워서 클로드코드는 개발자만을 위한 툴인 줄 알았는데, 생각했던 걸 실제 구현하고 테스트하며 완성해가는 과정은 신세계였습니다. 생각보다 수월하게 단시간에 익힐 수 있어서 계속 무언가를 만들고 싶어졌습니다. 즐거운 시간이었습니다."
+  ];
+
+  /* 얼굴만 보이는 아바타 SVG — 모자 포함, 가방/팔/다리 제외 */
+  function makeClawdFaceSvg(v) {
+    const [capMain, capDark, capAccent] = v.cap;
+    return `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 3 15 11" preserveAspectRatio="xMidYMid meet">
+        <rect x="2" y="6" width="11" height="8" fill="#DE886D"/>
+        <rect x="4"  y="8" width="1" height="2" fill="#000"/>
+        <rect x="10" y="8" width="1" height="2" fill="#000"/>
+        <g transform="rotate(-15, 6, 6.5)">
+          <rect x="1"  y="4.5" width="7" height="2" fill="${capMain}"/>
+          <rect x="-1" y="5.5" width="4" height="1" fill="${capDark}"/>
+          <rect x="4"  y="4.5" width="1" height="1" fill="${capAccent}"/>
+        </g>
+      </svg>`;
+  }
+
+  /* 히어로 팔레트 기반 아바타 배경색 (흰색 제외 — 아바타에서 안 보임) */
+  const AVATAR_BG_POOL = COLOR_POOL.filter(c => c !== '#FFFFFF');
+  /* 셔플 복사본 → 6개 말풍선에 중복 최소화하며 분산 */
+  const shuffledBgs = AVATAR_BG_POOL.slice().sort(() => Math.random() - 0.5);
+
+  const bubbleListEl = document.getElementById('bubble-list');
+  REVIEWS.forEach((text, i) => {
+    const side = i % 2 === 0 ? 'left' : 'right';
+    const variant = VARIANTS[i % VARIANTS.length];
+    const bg = shuffledBgs[i % shuffledBgs.length];
+    bubbleListEl.insertAdjacentHTML('beforeend', `
+      <div class="bubble-row ${side}">
+        <div class="bubble-avatar" style="background:${bg}">${makeClawdFaceSvg(variant)}</div>
+        <div class="bubble" data-text="${text.replace(/"/g, '&quot;')}"></div>
+      </div>
+    `);
+  });
+
+  document.querySelectorAll('.bubble[data-text]').forEach(el => {
+    el.textContent = el.dataset.text;
+  });
+
   /* ───── 3. Carousel 렌더 ───── */
   const slidesEl = document.getElementById('slides');
+
+  const CHROME_FRAME = `
+    <div class="thumb-chrome">
+      <div class="thumb-chrome-dots">
+        <span class="thumb-chrome-dot r"></span>
+        <span class="thumb-chrome-dot y"></span>
+        <span class="thumb-chrome-dot g"></span>
+      </div>
+      <div class="thumb-chrome-url"></div>
+    </div>`;
 
   ITEMS.forEach((it, i) => {
     const thumbInner = it.thumb ? `<img src="${it.thumb}" alt="${it.title}">` : 'Thumbnail';
@@ -749,9 +1246,13 @@
     slidesEl.insertAdjacentHTML('beforeend', `
       <div class="slide">
         <h2 class="slide-title">${it.title}</h2>
+        <p class="slide-subtitle${it.subtitle ? '' : ' is-placeholder'}">${it.subtitle || '짧은 소개 한 줄'}</p>
         <p class="slide-desc">${it.desc}</p>
         <div class="slide-stage">
-          <div class="slide-thumb" data-url="${it.url}">${thumbInner}</div>
+          <div class="slide-thumb" data-url="${it.url}">
+            ${CHROME_FRAME}
+            <div class="slide-thumb-body">${thumbInner}</div>
+          </div>
           <div class="slide-clawd">${makeClawdSvg(variant)}</div>
         </div>
       </div>
@@ -961,9 +1462,8 @@
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     function frame() {
-      // 잔상 페이드
-      ctx.fillStyle = 'rgba(10, 10, 10, 0.22)';
-      ctx.fillRect(0, 0, W, H);
+      // 매 프레임 완전 클리어 — 잔상 제거
+      ctx.clearRect(0, 0, W, H);
 
       scheduleLaunches(performance.now());
 
@@ -1021,17 +1521,310 @@
 
   /* ───── 4. Item Lists 렌더 ───── */
   const gridEl = document.getElementById('grid');
-  ITEMS.forEach(it => {
-    const thumb = it.thumb ? `<img src="${it.thumb}" alt="${it.title}">` : '';
-    gridEl.insertAdjacentHTML('beforeend', `
-      <a class="card" href="${it.url}" target="_blank" rel="noopener">
-        <div class="card-thumb">${thumb}</div>
-        <h3 class="card-title">${it.title}</h3>
-        <p class="card-desc">${it.desc}</p>
-      </a>
-    `);
+  const ICONS = {
+    up:    `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13 V3 M3.5 7.5 L8 3 L12.5 7.5"/></svg>`,
+    down:  `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 V13 M3.5 8.5 L8 13 L12.5 8.5"/></svg>`,
+    edit:  `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M11.3 2.5 L13.5 4.7 L5.2 13 L2.5 13.5 L3 10.8 Z M10.3 3.5 L12.5 5.7"/></svg>`,
+    trash: `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 H13.5 M6 4.5 V2.8 H10 V4.5 M4 4.5 L4.7 13.5 H11.3 L12 4.5 M6.5 7 V11.5 M9.5 7 V11.5"/></svg>`
+  };
+  function escHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+  function renderGrid() {
+    gridEl.innerHTML = '';
+    ITEMS.forEach((it, idx) => {
+      const isEmpty = it.empty;
+      const thumb = it.thumb ? `<img src="${escHtml(it.thumb)}" alt="${escHtml(it.title)}">` : '';
+      const isAdmin = document.body.classList.contains('admin-on');
+      const tag = isAdmin || !it.url || it.url === '#' ? 'div' : 'a';
+      const hrefAttr = tag === 'a' ? `href="${escHtml(it.url)}" target="_blank" rel="noopener"` : '';
+      const adminCtrls = isAdmin ? `
+        <div class="card-admin">
+          <button class="card-admin-btn" data-act="up"   data-i="${idx}" aria-label="위로">${ICONS.up}</button>
+          <button class="card-admin-btn" data-act="down" data-i="${idx}" aria-label="아래로">${ICONS.down}</button>
+          <button class="card-admin-btn" data-act="edit" data-i="${idx}" aria-label="편집">${ICONS.edit}</button>
+          <button class="card-admin-btn" data-act="del"  data-i="${idx}" aria-label="삭제">${ICONS.trash}</button>
+        </div>` : '';
+      gridEl.insertAdjacentHTML('beforeend', `
+        <${tag} class="card ${isEmpty ? 'is-empty' : ''}" ${hrefAttr}>
+          <div class="card-thumb">${thumb}</div>
+          <h3 class="card-title">${escHtml(it.title || 'Item')}</h3>
+          <p class="card-desc">${escHtml(it.desc || '')}</p>
+          ${adminCtrls}
+        </${tag}>
+      `);
+    });
+  }
+  renderGrid();
+
+  /* ───── 5. Admin 모드 (로그인 + 편집/재정렬/삭제) ───── */
+  const ADMIN_PW = 'MAU800';
+  const loginModal = document.getElementById('login-modal');
+  const editModal  = document.getElementById('edit-modal');
+  const adminBtn   = document.getElementById('admin-btn');
+
+  function openModal(el)  { el.classList.add('is-open'); }
+  function closeModal(el) { el.classList.remove('is-open'); }
+  function updateAdminBtnLabel() {
+    adminBtn.textContent = document.body.classList.contains('admin-on') ? 'Log-out' : 'Admin';
+  }
+
+  adminBtn.addEventListener('click', () => {
+    if (document.body.classList.contains('admin-on')) {
+      // 이미 로그인 상태면 로그아웃
+      document.body.classList.remove('admin-on');
+      sessionStorage.removeItem('adminOn');
+      updateAdminBtnLabel();
+      renderGrid();
+    } else {
+      document.getElementById('login-pw').value = '';
+      document.getElementById('login-error').textContent = '';
+      openModal(loginModal);
+      setTimeout(() => document.getElementById('login-pw').focus(), 50);
+    }
+  });
+  document.getElementById('login-cancel').addEventListener('click', () => closeModal(loginModal));
+  document.getElementById('login-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pw = document.getElementById('login-pw').value;
+    if (pw.toUpperCase() === ADMIN_PW.toUpperCase()) {
+      document.body.classList.add('admin-on');
+      sessionStorage.setItem('adminOn', '1');
+      closeModal(loginModal);
+      updateAdminBtnLabel();
+      renderGrid();
+    } else {
+      document.getElementById('login-error').textContent = '비밀번호가 일치하지 않습니다.';
+    }
+  });
+  // 새로고침 후 세션 복원
+  if (sessionStorage.getItem('adminOn') === '1') {
+    document.body.classList.add('admin-on');
+    renderGrid();
+  }
+  updateAdminBtnLabel();
+
+  /* 편집 모달 - 이미지 업로드 */
+  let editThumbDataUrl = '';
+  const editThumbFile  = document.getElementById('edit-thumb-file');
+  const editThumbBtn   = document.getElementById('edit-thumb-btn');
+  const editThumbLabel = document.getElementById('edit-thumb-label');
+  const editThumbPrev  = document.getElementById('edit-thumb-preview');
+  const editThumbPrevImg = document.getElementById('edit-thumb-preview-img');
+  const editThumbRemove  = document.getElementById('edit-thumb-remove');
+
+  function setEditThumbPreview(dataUrl, filename) {
+    editThumbDataUrl = dataUrl || '';
+    if (editThumbDataUrl) {
+      editThumbPrevImg.src = editThumbDataUrl;
+      editThumbPrev.hidden = false;
+      editThumbLabel.textContent = filename
+        ? `✓ ${filename.length > 20 ? filename.slice(0,20) + '…' : filename}`
+        : '이미지 변경';
+    } else {
+      editThumbPrev.hidden = true;
+      editThumbLabel.textContent = '이미지 선택';
+      editThumbFile.value = '';
+    }
+  }
+  async function processEditThumbFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      editThumbFile.value = '';
+      return;
+    }
+    try {
+      const dataUrl = await resizeImageToDataUrl(file, 1280, 1280, 0.85);
+      setEditThumbPreview(dataUrl, file.name);
+    } catch (err) {
+      alert('이미지를 불러오지 못했습니다.');
+    }
+  }
+
+  editThumbBtn.addEventListener('click', () => editThumbFile.click());
+  editThumbFile.addEventListener('change', (e) => processEditThumbFile(e.target.files[0]));
+  editThumbRemove.addEventListener('click', () => setEditThumbPreview(''));
+
+  /* 드래그앤드롭 */
+  ['dragenter', 'dragover'].forEach(evt => {
+    editThumbBtn.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      editThumbBtn.classList.add('is-dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    editThumbBtn.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      editThumbBtn.classList.remove('is-dragover');
+    });
+  });
+  editThumbBtn.addEventListener('drop', (e) => {
+    const file = e.dataTransfer?.files?.[0];
+    if (file) processEditThumbFile(file);
+  });
+  // 영역 밖 드롭 시 브라우저가 파일 여는 것 방지
+  window.addEventListener('dragover', e => e.preventDefault());
+  window.addEventListener('drop', e => e.preventDefault());
+
+  async function resizeImageToDataUrl(file, maxW, maxH, quality) {
+    const dataUrl = await new Promise((resolve, reject) => {
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = reject;
+      r.readAsDataURL(file);
+    });
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = dataUrl;
+    });
+    let { width, height } = img;
+    if (width > maxW || height > maxH) {
+      const r = Math.min(maxW / width, maxH / height);
+      width = Math.round(width * r);
+      height = Math.round(height * r);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+    return canvas.toDataURL('image/jpeg', quality);
+  }
+
+  // 카드 편집 컨트롤 위임
+  let editIdx = -1;
+  let originalEditThumbUrl = ''; // 편집 진입 시점의 thumb URL (변경 여부 비교용)
+
+  async function swapOrder(i, j) {
+    const a = ITEMS[i], b = ITEMS[j];
+    if (!a.id || !b.id) {
+      // 빈 슬롯 끼어 있으면 클라이언트 단에서만 스왑
+      [ITEMS[i], ITEMS[j]] = [ITEMS[j], ITEMS[i]];
+      renderGrid();
+      return;
+    }
+    const aOrder = a.sort_order ?? 0;
+    const bOrder = b.sort_order ?? 0;
+    const { error: e1 } = await sb.from('items').update({ sort_order: bOrder }).eq('id', a.id);
+    const { error: e2 } = await sb.from('items').update({ sort_order: aOrder }).eq('id', b.id);
+    if (e1 || e2) {
+      alert('순서 변경 실패: ' + ((e1||e2).message || ''));
+      return;
+    }
+    a.sort_order = bOrder;
+    b.sort_order = aOrder;
+    [ITEMS[i], ITEMS[j]] = [ITEMS[j], ITEMS[i]];
+    renderGrid();
+  }
+
+  gridEl.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.card-admin-btn');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const act = btn.dataset.act;
+    const i = +btn.dataset.i;
+    if (act === 'up' && i > 0) {
+      await swapOrder(i, i - 1);
+    } else if (act === 'down' && i < ITEMS.length - 1) {
+      await swapOrder(i, i + 1);
+    } else if (act === 'del') {
+      if (!confirm('이 아이템을 삭제할까요?')) return;
+      const target = ITEMS[i];
+      if (target.id) {
+        const { error } = await sb.from('items').delete().eq('id', target.id);
+        if (error) { alert('삭제 실패: ' + error.message); return; }
+      }
+      ITEMS.splice(i, 1);
+      while (ITEMS.length < 6) ITEMS.push(makeEmpty(ITEMS.length));
+      ITEMS.forEach((it, idx) => { if (it.empty) it.title = `Item ${idx + 1}`; });
+      renderGrid();
+    } else if (act === 'edit') {
+      editIdx = i;
+      originalEditThumbUrl = ITEMS[i].thumb || '';
+      document.getElementById('edit-title').value    = ITEMS[i].empty ? '' : (ITEMS[i].title || '');
+      document.getElementById('edit-subtitle').value = ITEMS[i].subtitle || '';
+      document.getElementById('edit-desc').value     = ITEMS[i].desc     || '';
+      document.getElementById('edit-url').value      = ITEMS[i].url      || '';
+      setEditThumbPreview(ITEMS[i].thumb || '', '');
+      if (ITEMS[i].thumb) editThumbLabel.textContent = '이미지 변경';
+      openModal(editModal);
+    }
+  });
+  document.getElementById('edit-cancel').addEventListener('click', () => closeModal(editModal));
+  document.getElementById('edit-save').addEventListener('click', async () => {
+    if (editIdx < 0) return;
+    const title    = document.getElementById('edit-title').value.trim();
+    const subtitle = document.getElementById('edit-subtitle').value.trim();
+    const desc     = document.getElementById('edit-desc').value.trim();
+    const url      = document.getElementById('edit-url').value.trim();
+    const fallbackTitle = `Item ${editIdx + 1}`;
+    const cur = ITEMS[editIdx];
+    const saveBtn = document.getElementById('edit-save');
+    const origLabel = saveBtn.textContent;
+    saveBtn.disabled = true;
+    saveBtn.textContent = '저장 중…';
+    try {
+      // thumb 변경 판별: editThumbDataUrl 이 data: 로 시작하면 새 업로드, 그대로면 기존 URL
+      let thumb_url = cur.thumb || '';
+      if (editThumbDataUrl && editThumbDataUrl !== originalEditThumbUrl) {
+        if (editThumbDataUrl.startsWith('data:')) {
+          thumb_url = await uploadThumbToStorage(editThumbDataUrl);
+        } else {
+          thumb_url = editThumbDataUrl;
+        }
+      } else if (!editThumbDataUrl) {
+        thumb_url = '';
+      }
+      const isEmpty = !title && !subtitle && !desc && !thumb_url && !url;
+      const payload = {
+        title: title || fallbackTitle,
+        subtitle, desc, url, thumb_url
+      };
+      if (cur.id) {
+        const { error } = await sb.from('items').update(payload).eq('id', cur.id);
+        if (error) throw error;
+        Object.assign(cur, { title: payload.title, subtitle, desc, url, thumb: thumb_url, empty: isEmpty });
+      } else {
+        // 빈 슬롯에서 편집한 경우 — 새 row insert
+        if (isEmpty) {
+          // 아무것도 입력 안 함 → 그냥 닫기
+        } else {
+          const insertData = { ...payload, sort_order: Math.floor(Date.now() / 1000) };
+          const { data, error } = await sb.from('items').insert(insertData).select().single();
+          if (error) throw error;
+          ITEMS[editIdx] = {
+            id: data.id,
+            title: data.title, subtitle: data.subtitle || '', desc: data.desc || '',
+            url: data.url || '', thumb: data.thumb_url || '',
+            sort_order: data.sort_order ?? 0, empty: false
+          };
+        }
+      }
+      closeModal(editModal);
+      renderGrid();
+    } catch (err) {
+      console.error(err);
+      alert('저장 실패: ' + (err?.message || err));
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = origLabel;
+    }
+  });
+  // 배경 클릭 시 닫기
+  [loginModal, editModal].forEach(m => {
+    m.addEventListener('click', (e) => { if (e.target === m) closeModal(m); });
+  });
+  // ESC 키로 모달 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeModal(loginModal); closeModal(editModal); }
   });
 
+})();
 </script>
 </body>
 </html>
