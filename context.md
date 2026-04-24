@@ -27,7 +27,13 @@ hackathon/
 - Project URL: `https://sczteqjqtzcklqsobkoh.supabase.co`
 - Publishable key는 코드에 박혀 있음 (공개 키이므로 OK, 시크릿 키 절대 커밋 금지)
 - 테이블: `items` (id, created_at, title, subtitle, desc, url, thumb_url, sort_order). RLS disabled.
-- 스토리지 버킷: `thumbnails` (public)
+- 스토리지 버킷: `thumbnails` (public read) — **INSERT 정책 수동 추가 완료**:
+  ```sql
+  create policy "Public upload to thumbnails"
+  on storage.objects for insert to anon
+  with check (bucket_id = 'thumbnails');
+  ```
+  (public 버킷은 READ만 자동 허용, INSERT는 정책 필요)
 - 등록: `register.html` → 이미지를 `thumbnails`에 업로드, `items`에 row insert
 - 조회: `index.html` → `items` 테이블에서 `sort_order` ASC, `created_at` ASC 정렬로 fetch
 - 어드민(비번 `MAU800`): 편집/삭제/순서 모두 Supabase에 직접 반영
@@ -49,7 +55,9 @@ hackathon/
 - 서브타이틀: "The UXI team hosted a hackathon on March 13, 2026."
 
 ### 히어로 — 캐러셀
-- 6개 아이템 (ITEMS 배열), 썸네일/URL은 현재 placeholder
+- 6개 아이템 (Supabase `items`에서 fetch, 부족 시 empty로 패딩)
+- 타이틀 + 한 줄 소개(subtitle)만 표시. **상세설명(desc)은 제거** — 히어로는 미리보기, 상세는 링크 클릭으로 이동
+- 서브타이틀 → 썸네일 간격 24px (`.slide-subtitle` margin-bottom)
 - 전환: `translateX(-cur * 100%)`, duration 0.85s, easing `cubic-bezier(0.34, 1.2, 0.64, 1)` (살짝 overshoot)
 - 좌우 nav 버튼 + 키보드 ←→ + 드래그 스와이프 지원
 - 썸네일 클릭 시 `window.open(url, '_blank')`
@@ -106,7 +114,6 @@ hackathon/
 ---
 
 ## 집에 가서 이어서 할 작업
-- 아이템 썸네일 이미지 및 실 URL 교체 (ITEMS 배열)
 - 필요 시 캐릭터 표정/포즈 다양화 (현재는 색상/FX만 차등 — 표정 변형 시도는 어색해서 원복됨)
 - 필요 시 팔 각도/길이/두께 미세 조정
 
