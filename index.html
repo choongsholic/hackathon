@@ -35,6 +35,36 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ═══════════ LOADING OVERLAY ═══════════ */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--hero-bg, #0a0a0a);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+  }
+  .loading-overlay.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .loading-clawd {
+    width: 220px;
+    height: 220px;
+    display: block;
+  }
+  .loading-text {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  }
+
   /* ═══════════ HERO ═══════════ */
   .hero {
     background: var(--hero-bg);
@@ -683,6 +713,11 @@
 </head>
 <body>
 
+<div class="loading-overlay" id="loading-overlay">
+  <object class="loading-clawd" type="image/svg+xml" data="assets/clawd/clawd-working-juggling.svg" aria-label="로딩 중"></object>
+  <div class="loading-text">LOADING…</div>
+</div>
+
 <section class="hero">
   <canvas id="fw-canvas" aria-hidden="true"></canvas>
   <h1 class="title" id="title"></h1>
@@ -995,7 +1030,18 @@
     const { data: urlData } = sb.storage.from('thumbnails').getPublicUrl(data.path);
     return urlData.publicUrl;
   }
+  const __loadStart = performance.now();
   let ITEMS = await fetchItems();
+  // 로딩 오버레이 숨기기 (최소 700ms 표시 — 너무 빨리 사라지면 깜빡거림)
+  const __elapsed = performance.now() - __loadStart;
+  const __minShow = 700;
+  setTimeout(() => {
+    const ov = document.getElementById('loading-overlay');
+    if (ov) {
+      ov.classList.add('is-hidden');
+      setTimeout(() => ov.remove(), 600);
+    }
+  }, Math.max(0, __minShow - __elapsed));
 
   /* 클로드 캐릭터 6종 — 몸/팔/다리 형태는 동일, 모자·가방 컬러 & 헤드 이펙트로 다양화 */
   const VARIANTS = [

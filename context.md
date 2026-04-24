@@ -36,6 +36,12 @@ hackathon/
 
 ## 구현 완료 사항
 
+### 로딩 오버레이
+- 페이지 진입 시 `clawd-working-juggling.svg`(저글링하는 클로드)를 화면 중앙에 풀스크린 오버레이로 표시
+- Supabase fetch 완료 후 0.5초 페이드아웃 → 제거. 최소 표시 시간 700ms (깜빡임 방지)
+- `<object type="image/svg+xml">`로 SVG 자체 CSS 애니메이션 유지
+- `LOADING…` 텍스트 라벨 동반
+
 ### 히어로 — 타이틀 애니메이션
 - "UXI Hackathon" 각 글자 `<span class="letter">`로 분리
 - **글자별 랜덤 흔들림**: duration 2.2~4.0s, delay 0~1.4s, translateY −2~−7px, rotate 랜덤 (letterDance 키프레임)
