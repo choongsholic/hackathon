@@ -104,12 +104,32 @@ hackathon/
 - 눈 깜빡임: `eyes-blink-rush` 2.5s 키프레임, `scaleY(0.1)`
 
 ### 레이아웃 / 여백
-- `.hero` padding `80px 0 0` (하단 padding 0 → 캐릭터 발이 hero 바닥에 접지)
+- `.hero` padding `100px 0 0`, **min-height 제거** → 콘텐츠 자연 높이 (캐릭터 발이 list 경계에 닿음)
+- 모바일 hero padding `72px 0 0`
 - `.slide-clawd`: width 200px, height 182px, margin-top `-125px`
 
+### 타이포 스케일 (v2 — 2026-04-25 큼지막한 리듬)
+- `.title` (UXI Hackathon): 98px / 모바일 84px
+- `.slide-title`: 30px / `.slide-subtitle`: 18px (모바일 16px)
+- `.list-title` / `.reviews-title`: **YouandiNewKrTitle 적용**, 42px, weight 800
+- `.card-title`: 28px, margin `22px 0 10px`
+- `.card-desc`: 16px
+- `.slide` 좌우 패딩 96px (모바일 76px), 좌우 화살표 여백 확보 강화
+
 ### 아이템 리스트
-- 3열 그리드, aspect 16:10 썸네일 (placeholder `#000`), 호버 시 translateY(-4px)
+- 3열 그리드, aspect 16:10 썸네일, 카드 thumb border-radius 20px, border 1px rgba(0,0,0,0.12)
+- gap `48px 32px` (모바일 1열 + gap 60px)
+- 호버 시 `.card-thumb` border-color → `#000`
 - 각 카드 `<a target="_blank">` — 썸네일/URL 교체는 ITEMS 배열에서 일괄 처리
+
+### 카드 desc 불릿 리스트 지원
+- `formatDesc(s)`: 텍스트에 `- ` 시작 라인이 하나라도 있으면 `<ul class="card-desc">`로 변환
+- 줄바꿈은 항목 구분, 같은 항목 내 추가 라인은 공백으로 join
+- 불릿 없으면 기존대로 `<p class="card-desc">` 유지
+
+### 폭죽 (히어로 배경 카오스)
+- 폭발 입자 70~120개 (기존 16~40에서 증가), 사이즈 13~19px
+- **그로우 플래시**: 폭발 직후 반경 140~240의 백색 radial gradient를 `globalCompositeOperation = 'lighter'`로 32프레임 동안 살짝 팽창시키며 페이드아웃 → 밤하늘 빛 퍼지는 느낌
 
 ---
 

@@ -68,17 +68,17 @@
   /* ═══════════ HERO ═══════════ */
   .hero {
     background: var(--hero-bg);
-    padding: 80px 0 0;
+    padding: 100px 0 0;
     position: relative;
     overflow: hidden;
-    min-height: 810px; /* 초기 렌더 시 레이아웃 settling 방지 */
+    /* min-height 제거 — 콘텐츠 자연 높이로 정렬 → 캐릭터 발이 list 경계에 닿음 */
   }
   .title {
     margin: 0;
     text-align: center;
     font-family: 'YouandiNewKrTitle', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
     font-weight: 800;
-    font-size: 72px;
+    font-size: 98px;
     letter-spacing: -0.01em;
     line-height: 1;
     user-select: none;
@@ -139,7 +139,7 @@
   }
   .slide {
     flex: 0 0 100%;
-    padding: 0 76px; /* 화살표(좌우 8+56=64) 영역 확보 + 8px 여백 */
+    padding: 0 96px; /* 화살표(좌우 8+56=64) 영역 확보 + 32px 여백 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -148,7 +148,7 @@
     min-height: 560px;
   }
   .slide-title {
-    font-size: 28px;
+    font-size: 30px;
     font-weight: 700;
     margin: 0 0 8px;
     color: #fff;
@@ -158,7 +158,7 @@
     text-overflow: ellipsis;
   }
   .slide-subtitle {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 700;
     color: rgba(255, 255, 255, 0.64);
     margin: 0 0 24px;
@@ -196,7 +196,7 @@
     z-index: 2;
     width: 100%;
     aspect-ratio: 16 / 10;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
     cursor: pointer;
     transition: transform 0.25s ease;
@@ -373,14 +373,15 @@
   .list {
     background: var(--list-bg);
     color: #000;
-    padding: 80px 24px 64px;
+    padding: 80px 24px;
   }
   .list-inner {
-    max-width: 1160px;
+    max-width: 1200px;
     margin: 0 auto;
   }
   .list-title {
-    font-size: 34px;
+    font-family: 'YouandiNewKrTitle', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+    font-size: 42px;
     font-weight: 800;
     margin: 0 0 32px;
     letter-spacing: -0.01em;
@@ -388,7 +389,7 @@
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 32px 24px;
+    gap: 48px 32px;
   }
   .card {
     text-decoration: none;
@@ -401,41 +402,61 @@
     width: 100%;
     aspect-ratio: 16 / 10;
     background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 20px;
     overflow: hidden;
+    transition: border-color 0.2s ease;
   }
+  .card:hover .card-thumb { border-color: #000; }
   .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .card-title {
-    font-size: 18px;
+    font-size: 28px;
     font-weight: 700;
-    margin: 16px 0 6px;
+    margin: 22px 0 10px;
     letter-spacing: -0.005em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .card-desc {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--muted-dark);
     line-height: 1.5;
     margin: 0;
     white-space: pre-line;
   }
+  ul.card-desc {
+    list-style: none;
+    padding: 0;
+    white-space: normal;
+  }
+  ul.card-desc li {
+    position: relative;
+    padding-left: 0.9em;
+  }
+  ul.card-desc li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 1.5;
+  }
+  ul.card-desc li + li { margin-top: 4px; }
 
   /* ═══════════ REFLECTIONS (후기) ═══════════ */
   .reviews {
     background: var(--list-bg);
     color: #000;
-    padding: 80px 24px 96px;
+    padding: 80px 24px;
   }
   .reviews-inner {
-    max-width: 1160px;
+    max-width: 1200px;
     margin: 0 auto;
   }
   .reviews-title {
-    font-size: 34px;
+    font-family: 'YouandiNewKrTitle', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+    font-size: 42px;
     font-weight: 800;
     margin: 0 0 40px;
     letter-spacing: -0.01em;
@@ -695,15 +716,16 @@
     .bubble-row { max-width: 82%; }
   }
   @media (max-width: 600px) {
-    .title { font-size: 64px; line-height: 1.02; }
+    .title { font-size: 84px; line-height: 1.02; }
     .title .title-space { display: block; width: 100%; height: 0; }
     .slide-title { font-size: 22px; margin-bottom: 8px; }
+    .slide-subtitle { font-size: 16px; }
     .slide-desc { font-size: 13px; }
-    .slide { min-height: 398px; padding: 0 56px; }
+    .slide { min-height: 418px; padding: 0 76px; }
     .slide-stage { margin-top: -6px; }
     .carousel { margin-top: 44px; }
-    .hero { padding: 48px 0 0; min-height: 660px; }
-    .grid { grid-template-columns: 1fr; }
+    .hero { padding: 72px 0 0; }
+    .grid { grid-template-columns: 1fr; gap: 60px; }
     .bubble-row { max-width: 78%; }
     .bubble { font-size: 15px; padding: 16px 20px; }
     .bubble-avatar { width: 32px; height: 32px; margin-top: 12px; }
@@ -1442,6 +1464,7 @@
 
     const rockets   = [];
     const particles = [];
+    const flashes   = [];
     const G_ROCKET  = 0.07;
     const G_PART    = 0.04;
 
@@ -1462,10 +1485,13 @@
     }
 
     function explode(x, y, baseColor) {
-      // 더 넓게 흩뿌리기: 입자는 더 적게, 속도는 더 빠르게
-      const count  = 16 + ((Math.random() * 24) | 0);   // 16~40
+      // 밤하늘에 빛 퍼지는 그로우
+      const flashRadius = 140 + Math.random() * 100;
+      flashes.push({ x, y, life: 32, maxLife: 32, radius: flashRadius });
+      // 입자: 갯수 늘리고 더 넓게
+      const count  = 70 + ((Math.random() * 50) | 0);   // 70~120
       const radius = 130 + Math.random() * 240;         // 130~370
-      const size   = 9 + Math.random() * 5;
+      const size   = 13 + Math.random() * 6;
       const multi  = Math.random() < 0.3;
       const col2   = multi ? pick(COLORS) : null;
       for (let i = 0; i < count; i++) {
@@ -1533,6 +1559,27 @@
         }
       }
 
+      // 그로우 플래시 (additive — 빛이 퍼지는 느낌)
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = flashes.length - 1; i >= 0; i--) {
+        const f = flashes[i];
+        f.life--;
+        const a = f.life / f.maxLife;
+        if (a <= 0) { flashes.splice(i, 1); continue; }
+        const r = f.radius * (1.5 - a * 0.5);  // 살짝 팽창
+        const alpha = Math.pow(a, 1.4) * 0.9;
+        const grad = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, r);
+        grad.addColorStop(0,    `rgba(255,255,255,${alpha})`);
+        grad.addColorStop(0.25, `rgba(255,255,255,${alpha * 0.45})`);
+        grad.addColorStop(0.6,  `rgba(255,255,255,${alpha * 0.12})`);
+        grad.addColorStop(1,    'rgba(255,255,255,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalCompositeOperation = 'source-over';
+
       // 폭발 입자 (글자는 띄엄띄엄 바뀌게 = 읽히는 카오스)
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
@@ -1569,6 +1616,28 @@
       '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
     }[c]));
   }
+  function formatDesc(s) {
+    const text = String(s ?? '');
+    if (!text.trim()) return '<p class="card-desc"></p>';
+    const lines = text.split(/\r?\n/);
+    const hasBullet = lines.some(l => /^\s*-\s+/.test(l));
+    if (!hasBullet) return `<p class="card-desc">${escHtml(text)}</p>`;
+    const items = [];
+    let cur = null;
+    for (const raw of lines) {
+      const m = raw.match(/^\s*-\s+(.*)$/);
+      if (m) {
+        if (cur !== null) items.push(cur);
+        cur = m[1];
+      } else if (raw.trim() === '') {
+        if (cur !== null) { items.push(cur); cur = null; }
+      } else {
+        cur = cur === null ? raw.trim() : cur + ' ' + raw.trim();
+      }
+    }
+    if (cur !== null) items.push(cur);
+    return `<ul class="card-desc">${items.map(t => `<li>${escHtml(t)}</li>`).join('')}</ul>`;
+  }
   function renderGrid() {
     gridEl.innerHTML = '';
     ITEMS.forEach((it, idx) => {
@@ -1588,7 +1657,7 @@
         <${tag} class="card ${isEmpty ? 'is-empty' : ''}" ${hrefAttr}>
           <div class="card-thumb">${thumb}</div>
           <h3 class="card-title">${escHtml(it.title || 'Item')}</h3>
-          <p class="card-desc">${escHtml(it.desc || '')}</p>
+          ${formatDesc(it.desc)}
           ${adminCtrls}
         </${tag}>
       `);
