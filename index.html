@@ -203,6 +203,15 @@
     flex-direction: column;
     background: #141414;
   }
+  .slide-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.1);
+    pointer-events: none;
+    z-index: 5;
+  }
   .slide-thumb-body {
     flex: 1;
     min-height: 0;
