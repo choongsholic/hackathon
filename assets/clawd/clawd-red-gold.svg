@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-15 -25 45 41" preserveAspectRatio="xMidYEnd meet" overflow="visible">
+  <style>
+    .step-a { animation: step 0.4s infinite ease-in-out; }
+    .step-b { animation: step 0.4s infinite ease-in-out; animation-delay: -0.2s; }
+    .pack-swing { transform-origin: 13px 8px; animation: pack-swing 0.4s infinite alternate ease-in-out; }
+    .shadow-walk { transform-origin: 7.5px 15.5px; animation: shadow-walk 0.4s infinite ease-in-out; }
+    .cap-sway { transform-origin: 6px 6.5px; animation: cap-sway 0.8s infinite alternate ease-in-out; }
+    .eyes-rect { transform-origin: 7.5px 9px; animation: eyes-blink-rush 2.5s infinite; }
+    .fx-sparkle   { animation: fxSparkle 1.5s infinite both; }
+    .fx-sparkle.b { animation-delay: 0.5s; }
+    .fx-sparkle.c { animation-delay: 1.0s; }
+    @keyframes step         { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1px); } }
+    @keyframes pack-swing   { 0% { transform: rotate(3deg); } 100% { transform: rotate(-3deg); } }
+    @keyframes shadow-walk  { 0%,50%,100% { transform: scale(1.03); opacity: 0.55; } 25%,75% { transform: scale(1); opacity: 0.5; } }
+    @keyframes cap-sway     { 0% { transform: rotate(-3deg); } 100% { transform: rotate(3deg); } }
+    @keyframes eyes-blink-rush {
+      0%,4%,100% { transform: scaleY(1); }
+      6%  { transform: scaleY(0.1); }
+      8%  { transform: scaleY(1); }
+      28% { transform: scaleY(0.1); }
+      31%,76% { transform: scaleY(1); }
+      78% { transform: scaleY(0.1); }
+      83% { transform: scaleY(1); }
+    }
+    @keyframes fxSparkle {
+      0%, 55%, 100% { opacity: 0; }
+      10%, 30%      { opacity: 1; }
+    }
+  </style>
+
+  <rect class="shadow-walk" x="3" y="15" width="9" height="1" fill="#000" opacity="0.5"/>
+
+  <g class="fx-sparkle" transform="translate(-3 -9)">
+    <rect x="-0.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-0.5" y="-1.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-0.5" y="0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-1.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="0.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+  </g>
+  <g class="fx-sparkle b" transform="translate(14 -8) scale(0.8)">
+    <rect x="-0.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-0.5" y="-1.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-0.5" y="0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-1.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="0.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+  </g>
+  <g class="fx-sparkle c" transform="translate(6 -13) scale(0.7)">
+    <rect x="-0.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-0.5" y="-1.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-0.5" y="0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="-1.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+    <rect x="0.5" y="-0.5" width="1" height="1" fill="#FFEB3B"/>
+  </g>
+
+  <g transform="rotate(-35 1 6)">
+    <rect x="0" y="-2" width="2" height="12" fill="#DE886D"/>
+  </g>
+  <g transform="rotate(35 14 6)">
+    <rect x="13" y="-2" width="2" height="12" fill="#DE886D"/>
+  </g>
+
+  <g class="pack-swing">
+    <rect x="13" y="7"  width="4" height="6" fill="#FFC107"/>
+    <rect x="12" y="8"  width="5" height="4" fill="#FFC107"/>
+    <rect x="13" y="7"  width="4" height="2" fill="#FF9800"/>
+    <rect x="13" y="10" width="4" height="1" fill="#FF9800"/>
+    <rect x="13" y="12" width="4" height="1" fill="#E65100"/>
+    <rect x="15" y="9"  width="1" height="1" fill="#FFF176"/>
+  </g>
+
+  <g fill="#DE886D">
+    <rect class="step-a" x="3"  y="13" width="1" height="2"/>
+    <rect class="step-b" x="5"  y="13" width="1" height="2"/>
+    <rect class="step-b" x="9"  y="13" width="1" height="2"/>
+    <rect class="step-a" x="11" y="13" width="1" height="2"/>
+  </g>
+
+  <rect x="2" y="6" width="11" height="7" fill="#DE886D"/>
+  <rect x="13" y="7" width="1" height="4" fill="#FF9800"/>
+
+  <g class="eyes-rect" fill="#000">
+    <rect x="4"  y="8" width="1" height="2"/>
+    <rect x="10" y="8" width="1" height="2"/>
+  </g>
+
+  <g class="cap-sway">
+    <g transform="rotate(-15, 6, 6.5)">
+      <rect x="1"  y="4.5" width="7" height="2" fill="#E65C5C"/>
+      <rect x="-1" y="5.5" width="4" height="1" fill="#B73B3B"/>
+      <rect x="4"  y="4.5" width="1" height="1" fill="#FFF176"/>
+    </g>
+  </g>
+</svg>
