@@ -136,7 +136,7 @@ hackathon/
 - `.slide-title` / `.slide-subtitle` `max-width: min(100%, 600px)` — 썸네일(slide-stage max-width 600px)보다 긴 텍스트는 ellipsis로 잘리도록 폭 일치
 
 ### Reflections 섹션 happy-clawd + 등록 게이트 (2026-04-27)
-- **폴짝 클로드**: `clawd-happy.svg` 176×176 캐릭터를 Reflections 마지막 말풍선과 footer 사이 빈 공간에 센터 정렬, 1.1s 사이클 점프 애니메이션 (squash/stretch 키프레임 4단계). `.reviews` padding-bottom 80→260px(모바일 56→240px)로 공간 확보. `pointer-events:none`
+- **폴짝 클로드 + 웃음 교대**: 176×176 캐릭터를 Reflections 마지막 말풍선과 footer 사이 빈 공간에 센터 정렬. **9s 외부 사이클**(steps(1, end))로 `clawd-react-drag.svg`(웃음) 3s ↔ `clawd-happy.svg`(폴짝) 6s 두 img를 opacity 토글. 폴짝은 1s 사이클 6회로 6초 정합 (squash/stretch 키프레임 4단계). 두 img는 `position: absolute; inset: 0`로 같은 박스에 겹침. `.reviews` padding-bottom 80→260px(모바일 56→240px)로 공간 확보. `pointer-events:none`
 - **+ 버튼 비번 게이트**: `.fab-register` 클릭 시 admin-on이 아니면 기존 Login 모달 띄우고 통과 시 register.html로 이동. `postLoginAction` 콜백 패턴으로 admin 토글 로그인과 등록 진입 로그인을 같은 모달로 통합 — 코드 중복 없음. 모달 타이틀 "Admin 로그인" → "Log-in"으로 통일
 - **남은 보안 갭**: register.html을 URL 직접 입력으로 접근하면 게이트 우회됨 (브라우저단 sessionStorage.adminOn 검사 추가 필요 시 후속)
 
