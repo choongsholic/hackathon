@@ -138,6 +138,7 @@
   }
   .slide {
     flex: 0 0 100%;
+    min-width: 0; /* nowrap 자식(slide-subtitle)이 슬라이드 폭을 확장하지 못하게 */
     padding: 0 96px; /* 화살표(좌우 8+56=64) 영역 확보 + 32px 여백 */
     display: flex;
     flex-direction: column;
@@ -151,7 +152,7 @@
     font-weight: 700;
     margin: 0 0 8px;
     color: #fff;
-    max-width: 100%;
+    max-width: min(100%, 600px); /* 썸네일 폭(slide-stage max-width)과 일치 */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -162,7 +163,7 @@
     color: rgba(255, 255, 255, 0.64);
     margin: 0 0 24px;
     letter-spacing: 0.01em;
-    max-width: 100%;
+    max-width: min(100%, 600px); /* 썸네일 폭(slide-stage max-width)과 일치 */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

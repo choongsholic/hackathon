@@ -131,6 +131,10 @@ hackathon/
 - 폭발 입자 70~120개 (기존 16~40에서 증가), 사이즈 13~19px
 - **그로우 플래시**: 폭발 직후 반경 140~240의 백색 radial gradient를 `globalCompositeOperation = 'lighter'`로 32프레임 동안 살짝 팽창시키며 페이드아웃 → 밤하늘 빛 퍼지는 느낌
 
+### 캐러셀 슬라이드 폭 안정화 (2026-04-27)
+- `.slide`에 `min-width: 0` 추가 — flex item 기본값 `min-width: auto`가 자식의 min-content width(=nowrap 텍스트 전체 폭)까지 슬라이드를 확장하던 이슈 차단. Trend Tracker처럼 서브타이틀이 긴 슬라이드만 썸네일이 더 크게 렌더링되던 버그 해결
+- `.slide-title` / `.slide-subtitle` `max-width: min(100%, 600px)` — 썸네일(slide-stage max-width 600px)보다 긴 텍스트는 ellipsis로 잘리도록 폭 일치
+
 ---
 
 ## 집에 가서 이어서 할 작업
