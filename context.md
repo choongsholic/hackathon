@@ -26,7 +26,10 @@ hackathon/
 ## Supabase
 - Project URL: `https://sczteqjqtzcklqsobkoh.supabase.co`
 - Publishable key는 코드에 박혀 있음 (공개 키이므로 OK, 시크릿 키 절대 커밋 금지)
-- 테이블: `items` (id, created_at, title, subtitle, desc, url, thumb_url, sort_order). RLS disabled.
+- 테이블: `items` (id, created_at, title, subtitle, desc, url, thumb_url, sort_order, **team, is_hero, review**). RLS disabled.
+  - `team` text DEFAULT 'UX Insight' — 팀 분류
+  - `is_hero` boolean DEFAULT false — 히어로 캐러셀 노출 여부
+  - `review` text — 해커톤 후기 (선택)
 - 스토리지 버킷: `thumbnails` (public read) — **INSERT 정책 수동 추가 완료**:
   ```sql
   create policy "Public upload to thumbnails"
@@ -34,9 +37,11 @@ hackathon/
   with check (bucket_id = 'thumbnails');
   ```
   (public 버킷은 READ만 자동 허용, INSERT는 정책 필요)
-- 등록: `register.html` → 이미지를 `thumbnails`에 업로드, `items`에 row insert
+- 등록: `register.html` → 이미지를 `thumbnails`에 업로드, `items`에 row insert (select '*'로 fetch해서 컬럼 누락에도 안전)
 - 조회: `index.html` → `items` 테이블에서 `sort_order` ASC, `created_at` ASC 정렬로 fetch
-- 어드민(비번 `MAU800`): 편집/삭제/순서 모두 Supabase에 직접 반영
+- 어드민:
+  - 일반 (비번 `MAU800`): 편집/삭제/순서 변경
+  - 수퍼 (비번 `mau800s`): 위 + 카드 좌측 상단 Hero 체크박스로 히어로 캐러셀 큐레이션
 
 ---
 
@@ -134,6 +139,28 @@ hackathon/
 ### 캐러셀 슬라이드 폭 안정화 (2026-04-27)
 - `.slide`에 `min-width: 0` 추가 — flex item 기본값 `min-width: auto`가 자식의 min-content width(=nowrap 텍스트 전체 폭)까지 슬라이드를 확장하던 이슈 차단. Trend Tracker처럼 서브타이틀이 긴 슬라이드만 썸네일이 더 크게 렌더링되던 버그 해결
 - `.slide-title` / `.slide-subtitle` `max-width: min(100%, 600px)` — 썸네일(slide-stage max-width 600px)보다 긴 텍스트는 ellipsis로 잘리도록 폭 일치
+
+### 팀 분류 + 히어로 큐레이션 + 후기 시스템 (2026-04-29)
+- **타이틀 두 줄로 변경**: "UXI Hackathon" → "UX LAB" / "HACKATHON" (`\n` → `<br>` 처리, 모바일에서 title-space 강제 줄바꿈 룰 제거)
+- **팀 필터 탭** (ALL / UX1 / UX2 / UX Insight):
+  - PC: 우측 상단, 모바일: 타이틀 아래 좌측 정렬 (flex-direction: column)
+  - 비활성: 연회색 배경 / 활성: 검정 배경 흰 글씨, 알약 형태
+  - **ALL**: 한 번 셔플된 랜덤 순서, 순서 편집(↑↓) 버튼 자동 숨김
+  - **UX1/UX2**: 실아이템 없으면 더미 카드 3개 표시
+  - **UX Insight**: 기존 6개 + 빈 placeholder 포함
+- **히어로 캐러셀 큐레이션**:
+  - `is_hero=true` 아이템만 캐러셀에 노출, 없으면 더미 3개 폴백
+  - 수퍼 어드민(`mau800s`) 로그인 시에만 카드 좌측 상단에 "Hero" 체크박스 노출 (CSS `body.super-admin-on .card-hero-toggle { display: inline-flex; }`)
+  - 체크 시 즉시 DB 업데이트 + 캐러셀 재렌더 (`renderCarousel()` 함수화)
+- **후기 시스템**:
+  - register.html 후기 입력란 + "후기만 작성" 토글 칩 (체크 시 위 5개 필드 hidden + required 해제, 입력값은 보존)
+  - review-only 아이템(타이틀/desc/썸네일/링크 모두 빈값)은 그리드/캐러셀에 안 보이고 Reflections 영역에만 표시 — `review_only` 플래그로 fetchItems에서 자동 판별
+  - Reflections 영역: ALL은 모든 후기 셔플, 각 팀 탭은 해당 팀 후기만 sort_order 순
+- **편집 모달 확장**:
+  - 모달 너비 560 → 680px, max-height 90vh + overflow-y auto
+  - 팀 탭 + 후기 textarea 추가, 저장 시 `team`/`review` 함께 update
+- **그리드 행 간격**: PC 48px → 68px (모바일 72px 유지)
+- **Items 라벨**: "Item Lists" → "Items"
 
 ### Reflections 섹션 happy-clawd + 등록 게이트 (2026-04-27)
 - **폴짝 클로드 + 웃음 교대**: 176×176 캐릭터를 Reflections 마지막 말풍선과 footer 사이 빈 공간에 센터 정렬. **9s 외부 사이클**(steps(1, end))로 `clawd-react-drag.svg`(웃음) 3s ↔ `clawd-happy.svg`(폴짝) 6s 두 img를 opacity 토글. 폴짝은 1s 사이클 6회로 6초 정합 (squash/stretch 키프레임 4단계). 두 img는 `position: absolute; inset: 0`로 같은 박스에 겹침. `.reviews` padding-bottom 80→260px(모바일 56→240px)로 공간 확보. `pointer-events:none`

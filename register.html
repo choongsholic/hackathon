@@ -61,7 +61,65 @@
     font-weight: 500;
   }
 
+  /* 팀 선택 탭 */
+  .team-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .team-tab {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 999px;
+    padding: 10px 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .team-tab:hover { color: #000; background: rgba(0, 0, 0, 0.08); }
+  .team-tab.is-active {
+    background: #000;
+    color: #fff;
+    font-weight: 700;
+  }
+  .team-tab.is-active:hover { background: #000; color: #fff; }
+  .team-tab:focus-visible { outline: 2px solid rgba(0,0,0,0.25); outline-offset: 2px; }
+
   .field { display: block; margin-bottom: 24px; }
+  .field-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .field-label-row .field-label { margin-bottom: 0; }
+  .review-only-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.55);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .review-only-toggle:hover { color: #000; background: rgba(0, 0, 0, 0.08); }
+  .review-only-toggle input { width: 14px; height: 14px; margin: 0; cursor: pointer; accent-color: #000; }
+  .review-only-toggle:has(input:checked) {
+    background: #000;
+    color: #fff;
+  }
+  .review-only-toggle:has(input:checked) input { accent-color: #fff; }
   .field-label {
     display: block;
     font-size: 13px;
@@ -220,39 +278,62 @@
   <p class="form-sub">해커톤에서 만든 프로젝트를 등록해주세요.</p>
 
   <form id="register-form" onsubmit="return handleSubmit(event)">
-    <label class="field">
-      <span class="field-label">프로젝트 제목<span class="req">*</span></span>
-      <input class="field-input" name="title" type="text" required placeholder="예: UX Research Dashboard">
-    </label>
-
-    <label class="field">
-      <span class="field-label">한 줄 소개 (히어로 영역)<span class="req">*</span></span>
-      <input class="field-input" name="subtitle" id="subtitle-input" type="text" required maxlength="120" placeholder="짧은 소개">
-    </label>
-
-    <label class="field">
-      <span class="field-label">설명<span class="req">*</span></span>
-      <textarea class="field-textarea" name="desc" required placeholder="어떤 프로젝트인지 간단히 소개해주세요."></textarea>
-    </label>
-
     <div class="field">
-      <span class="field-label">썸네일 이미지</span>
-      <div class="thumb-upload">
-        <button type="button" class="thumb-upload-btn" id="thumb-upload-btn">
-          <span id="thumb-upload-label">이미지 선택 (PNG, JPG, WebP 등)</span>
-        </button>
-        <div class="thumb-preview" id="thumb-preview" hidden>
-          <img id="thumb-preview-img" alt="미리보기">
-          <button type="button" class="thumb-remove" id="thumb-remove" aria-label="이미지 제거">✕</button>
-        </div>
+      <span class="field-label">팀<span class="req">*</span></span>
+      <div class="team-tabs" id="team-tabs" role="tablist" aria-label="팀 선택">
+        <button class="team-tab is-active" type="button" role="tab" aria-selected="true" data-team="UX Insight">UX Insight</button>
+        <button class="team-tab" type="button" role="tab" aria-selected="false" data-team="UX1">UX1</button>
+        <button class="team-tab" type="button" role="tab" aria-selected="false" data-team="UX2">UX2</button>
       </div>
-      <input type="file" id="thumb-file" accept="image/*" hidden>
-      <span class="field-hint">선택 안 하면 기본 회색 배경이 표시됩니다. (자동으로 최대 1280px로 리사이즈됨)</span>
+    </div>
+
+    <div id="project-fields">
+      <label class="field">
+        <span class="field-label">프로젝트 제목<span class="req">*</span></span>
+        <input class="field-input" name="title" type="text" required placeholder="예: UX Research Dashboard">
+      </label>
+
+      <label class="field">
+        <span class="field-label">한 줄 소개 (히어로 영역)<span class="req">*</span></span>
+        <input class="field-input" name="subtitle" id="subtitle-input" type="text" required maxlength="120" placeholder="짧은 소개">
+      </label>
+
+      <label class="field">
+        <span class="field-label">설명<span class="req">*</span></span>
+        <textarea class="field-textarea" name="desc" required placeholder="어떤 프로젝트인지 간단히 소개해주세요."></textarea>
+      </label>
+
+      <div class="field">
+        <span class="field-label">썸네일 이미지<span class="req">*</span></span>
+        <div class="thumb-upload">
+          <button type="button" class="thumb-upload-btn" id="thumb-upload-btn">
+            <span id="thumb-upload-label">이미지 선택 (PNG, JPG, WebP 등)</span>
+          </button>
+          <div class="thumb-preview" id="thumb-preview" hidden>
+            <img id="thumb-preview-img" alt="미리보기">
+            <button type="button" class="thumb-remove" id="thumb-remove" aria-label="이미지 제거">✕</button>
+          </div>
+        </div>
+        <input type="file" id="thumb-file" accept="image/*" hidden>
+        <span class="field-hint">자동으로 최대 1280px로 리사이즈됩니다.</span>
+      </div>
+
+      <label class="field">
+        <span class="field-label">프로젝트 링크<span class="req">*</span></span>
+        <input class="field-input" name="url" type="url" required placeholder="https://...">
+      </label>
     </div>
 
     <label class="field">
-      <span class="field-label">프로젝트 링크<span class="req">*</span></span>
-      <input class="field-input" name="url" type="url" required placeholder="https://...">
+      <span class="field-label-row">
+        <span class="field-label">해커톤 후기</span>
+        <label class="review-only-toggle">
+          <input type="checkbox" id="review-only-checkbox">
+          <span>후기만 작성</span>
+        </label>
+      </span>
+      <textarea class="field-textarea" name="review" placeholder="해커톤에서 느낀 점을 자유롭게 작성해주세요."></textarea>
+      <span class="field-hint">선택 사항입니다.</span>
     </label>
 
     <div class="form-actions">
@@ -267,6 +348,36 @@
   const SUPABASE_URL = 'https://sczteqjqtzcklqsobkoh.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_qA_GcBl_sk5Oj4a4a8c_OA_6x4kQVZ0';
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* 팀 선택 */
+  let SELECTED_TEAM = 'UX Insight';
+  const teamTabsEl = document.getElementById('team-tabs');
+  teamTabsEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.team-tab');
+    if (!btn) return;
+    const team = btn.dataset.team;
+    if (team === SELECTED_TEAM) return;
+    SELECTED_TEAM = team;
+    teamTabsEl.querySelectorAll('.team-tab').forEach(t => {
+      const active = t.dataset.team === team;
+      t.classList.toggle('is-active', active);
+      t.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+  });
+
+  /* 후기만 작성 모드 토글 */
+  const reviewOnlyCb = document.getElementById('review-only-checkbox');
+  const projectFieldsEl = document.getElementById('project-fields');
+  const requiredFields = projectFieldsEl.querySelectorAll('[required]');
+  reviewOnlyCb.addEventListener('change', () => {
+    const on = reviewOnlyCb.checked;
+    projectFieldsEl.style.display = on ? 'none' : '';
+    // required 토글 (입력값은 그대로 보존됨 — DOM 그대로 유지하고 display만 숨김)
+    requiredFields.forEach(f => {
+      if (on) f.removeAttribute('required');
+      else f.setAttribute('required', '');
+    });
+  });
 
   /* 이미지 업로드 + 리사이즈 */
   let uploadedThumbDataUrl = '';
@@ -366,24 +477,51 @@
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const reviewOnly = reviewOnlyCb.checked;
+    if (!reviewOnly && !uploadedThumbDataUrl) {
+      alert('썸네일 이미지를 업로드해주세요.');
+      return false;
+    }
+    if (reviewOnly && !document.querySelector('textarea[name="review"]').value.trim()) {
+      alert('후기를 작성해주세요.');
+      return false;
+    }
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const origLabel = submitBtn.textContent;
     submitBtn.disabled = true;
     submitBtn.textContent = '등록 중…';
     try {
       const data = Object.fromEntries(new FormData(e.target).entries());
-      let thumb_url = '';
-      if (uploadedThumbDataUrl) {
-        thumb_url = await uploadThumbToStorage(uploadedThumbDataUrl);
-      }
-      const { error } = await sb.from('items').insert({
+      const thumb_url = (reviewOnly || !uploadedThumbDataUrl)
+        ? ''
+        : await uploadThumbToStorage(uploadedThumbDataUrl);
+      const baseRow = reviewOnly ? {
+        title: '',
+        subtitle: '',
+        desc: '',
+        url: '',
+        thumb_url: '',
+        sort_order: Math.floor(Date.now() / 1000)
+      } : {
         title:    (data.title || '').trim() || 'Item',
         subtitle: (data.subtitle || '').trim(),
         desc:     (data.desc || '').trim(),
         url:      (data.url || '').trim(),
         thumb_url,
         sort_order: Math.floor(Date.now() / 1000)
-      });
+      };
+      const reviewVal = (data.review || '').trim();
+      // 신규 컬럼이 있으면 함께 저장, 없으면 자동으로 빠진 상태로 재시도
+      const fullRow = { ...baseRow, team: SELECTED_TEAM, review: reviewVal };
+      let { error } = await sb.from('items').insert(fullRow);
+      if (error && /column .*(team|review|is_hero).*does not exist|schema cache/i.test(error.message || '')) {
+        // team 만 떨어뜨려서 재시도
+        const noReview = { ...baseRow, team: SELECTED_TEAM };
+        ({ error } = await sb.from('items').insert(noReview));
+        if (error && /column .*team.*does not exist|schema cache/i.test(error.message || '')) {
+          ({ error } = await sb.from('items').insert(baseRow));
+        }
+      }
       if (error) throw error;
       alert('등록되었습니다.');
       window.location.href = 'index.html';

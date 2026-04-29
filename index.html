@@ -388,17 +388,50 @@
     max-width: 1200px;
     margin: 0 auto;
   }
+  .list-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 0 32px;
+  }
   .list-title {
     font-family: 'YouandiNewKrTitle', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
     font-size: 42px;
     font-weight: 800;
-    margin: 0 0 32px;
+    margin: 0;
     letter-spacing: -0.01em;
   }
+  .team-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .team-tab {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 999px;
+    padding: 11px 22px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .team-tab:hover { color: #000; background: rgba(0, 0, 0, 0.08); }
+  .team-tab.is-active {
+    background: #000;
+    color: #fff;
+    font-weight: 700;
+  }
+  .team-tab.is-active:hover { background: #000; color: #fff; }
+  .team-tab:focus-visible { outline: 2px solid rgba(0,0,0,0.25); outline-offset: 2px; }
   .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 48px 32px;
+    gap: 68px 32px;
   }
   .card {
     text-decoration: none;
@@ -617,11 +650,39 @@
     color: #000;
     width: 100%;
     max-width: 440px;
+    max-height: 90vh;
+    overflow-y: auto;
     border-radius: 16px;
     padding: 28px;
     font-family: 'SF Pro Display',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo',sans-serif;
   }
-  .modal.modal-lg { max-width: 560px; }
+  .modal.modal-lg { max-width: 680px; }
+  /* 편집 모달 — 팀 탭 (register.html의 .team-tab과 동일 스타일) */
+  .modal-team-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .modal-team-tab {
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 999px;
+    padding: 9px 18px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+  }
+  .modal-team-tab:hover { color: #000; background: rgba(0, 0, 0, 0.08); }
+  .modal-team-tab.is-active {
+    background: #000;
+    color: #fff;
+    font-weight: 700;
+  }
   .modal h3 {
     margin: 0 0 16px;
     font-size: 18px;
@@ -734,6 +795,39 @@
   .card.is-empty .card-title,
   .card.is-empty .card-desc { opacity: 0.4; }
 
+  /* 히어로 등록 체크박스 (수퍼 어드민 전용) */
+  .card-hero-toggle {
+    position: absolute;
+    top: 8px; left: 8px;
+    display: none;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-size: 12px;
+    font-weight: 700;
+    color: #000;
+    cursor: pointer;
+    user-select: none;
+    z-index: 2;
+  }
+  body.super-admin-on .card-hero-toggle { display: inline-flex; }
+  .card-hero-toggle input {
+    width: 14px; height: 14px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #000;
+  }
+  .card-hero-toggle:has(input:checked) {
+    background: #000;
+    color: #fff;
+  }
+  .card-hero-toggle:has(input:checked) input {
+    accent-color: #fff;
+  }
+
   /* + 아이템 등록 버튼 (풋터 우측) — 아웃라인 스타일 */
   .fab-register {
     position: absolute;
@@ -769,7 +863,6 @@
   }
   @media (max-width: 600px) {
     .title { font-size: 64px; line-height: 1.02; }
-    .title .title-space { display: block; width: 100%; height: 0; }
     .slide-title { font-size: 22px; margin-bottom: 8px; }
     .slide-subtitle { font-size: 16px; }
     .slide-desc { font-size: 13px; }
@@ -778,7 +871,15 @@
     .carousel { margin-top: 24px; }
     .hero { padding: 60px 0 0; }
     .list { padding: 36px 24px 56px; }
-    .list-title { font-size: 32px; margin-bottom: 20px; }
+    .list-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .list-title { font-size: 32px; margin: 0; }
+    .team-tabs { gap: 6px; }
+    .team-tab { font-size: 13px; padding: 9px 16px; }
     .reviews { padding: 36px 24px 240px; }
     .reviews-title { font-size: 32px; margin-bottom: 24px; }
     .grid { grid-template-columns: 1fr; gap: 72px; }
@@ -813,7 +914,15 @@
 
 <section class="list">
   <div class="list-inner">
-    <h2 class="list-title">Item Lists</h2>
+    <div class="list-header">
+      <h2 class="list-title">Items</h2>
+      <div class="team-tabs" id="team-tabs" role="tablist" aria-label="팀 필터">
+        <button class="team-tab is-active" type="button" role="tab" aria-selected="true" data-team="all">ALL</button>
+        <button class="team-tab" type="button" role="tab" aria-selected="false" data-team="UX1">UX1</button>
+        <button class="team-tab" type="button" role="tab" aria-selected="false" data-team="UX2">UX2</button>
+        <button class="team-tab" type="button" role="tab" aria-selected="false" data-team="UX Insight">UX Insight</button>
+      </div>
+    </div>
     <div class="grid" id="grid"></div>
   </div>
 </section>
@@ -861,6 +970,14 @@
 <div class="modal-backdrop" id="edit-modal">
   <div class="modal modal-lg">
     <h3>아이템 편집</h3>
+    <div class="modal-field">
+      <span class="modal-label">팀</span>
+      <div class="modal-team-tabs" id="edit-team-tabs" role="tablist" aria-label="팀 선택">
+        <button class="modal-team-tab is-active" type="button" role="tab" data-team="UX Insight">UX Insight</button>
+        <button class="modal-team-tab" type="button" role="tab" data-team="UX1">UX1</button>
+        <button class="modal-team-tab" type="button" role="tab" data-team="UX2">UX2</button>
+      </div>
+    </div>
     <label class="modal-field">
       <span class="modal-label">프로젝트 제목</span>
       <input class="modal-input" id="edit-title" type="text">
@@ -890,6 +1007,10 @@
       <span class="modal-label">프로젝트 링크</span>
       <input class="modal-input" id="edit-url" type="url" placeholder="https://...">
     </label>
+    <label class="modal-field">
+      <span class="modal-label">해커톤 후기 (선택)</span>
+      <textarea class="modal-textarea" id="edit-review" placeholder="해커톤에서 느낀 점을 자유롭게 작성해주세요."></textarea>
+    </label>
     <div class="modal-actions">
       <button class="modal-btn ghost"   type="button" id="edit-cancel">취소</button>
       <button class="modal-btn primary" type="button" id="edit-save">저장</button>
@@ -905,7 +1026,7 @@
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   /* ───── 1. Title 알파벳 애니메이션 (각 글자 랜덤 delay/duration/swing) ───── */
-  const TITLE = "UXI Hackathon";
+  const TITLE = "UX LAB\nHACKATHON";
   const COLOR_POOL = [
     '#F2A93A', /* orange */
     '#F15A4A', /* coral */
@@ -918,6 +1039,11 @@
   const titleEl = document.getElementById('title');
   let lastColor = null;
   TITLE.split('').forEach((ch) => {
+    if (ch === '\n') {
+      titleEl.insertAdjacentHTML('beforeend', '<br>');
+      lastColor = null;
+      return;
+    }
     if (ch === ' ') {
       titleEl.insertAdjacentHTML('beforeend', '<span class="title-space">&nbsp;</span>');
       lastColor = null;
@@ -1072,8 +1198,8 @@
   subtitleEl.textContent = DEFAULT_SUBTITLE;
 
   const MIN_SLOTS = 6;
-  function makeEmpty(i) {
-    return { id: null, title: `Item ${i + 1}`, subtitle: '', desc: '', url: '', thumb: '', empty: true };
+  function makeEmpty(i, team = 'UX Insight') {
+    return { id: null, title: `Item ${i + 1}`, subtitle: '', desc: '', url: '', thumb: '', empty: true, team };
   }
   function padToMin(items) {
     const out = items.slice();
@@ -1083,23 +1209,34 @@
   async function fetchItems() {
     const { data, error } = await sb
       .from('items')
-      .select('id, title, subtitle, desc, url, thumb_url, sort_order, created_at')
+      .select('*')
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: true });
     if (error) {
       console.error('아이템 로드 실패:', error);
       return Array.from({ length: MIN_SLOTS }, (_, i) => makeEmpty(i));
     }
-    const mapped = (data || []).map(r => ({
-      id: r.id,
-      title: r.title || 'Item',
-      subtitle: r.subtitle || '',
-      desc: r.desc || '',
-      url: r.url || '',
-      thumb: r.thumb_url || '',
-      sort_order: r.sort_order ?? 0,
-      empty: false
-    }));
+    const mapped = (data || []).map(r => {
+      const reviewOnly = !(r.title || '').trim()
+        && !(r.subtitle || '').trim()
+        && !(r.desc || '').trim()
+        && !(r.url || '').trim()
+        && !(r.thumb_url || '');
+      return {
+        id: r.id,
+        title: r.title || 'Item',
+        subtitle: r.subtitle || '',
+        desc: r.desc || '',
+        url: r.url || '',
+        thumb: r.thumb_url || '',
+        sort_order: r.sort_order ?? 0,
+        empty: false,
+        team: r.team || 'UX Insight',
+        is_hero: !!r.is_hero,
+        review: r.review || '',
+        review_only: reviewOnly
+      };
+    });
     return padToMin(mapped);
   }
   async function uploadThumbToStorage(dataUrl) {
@@ -1115,6 +1252,7 @@
   }
   const __loadStart = performance.now();
   let ITEMS = await fetchItems();
+  let TEAM_FILTER = 'all';
 
   /* 클로드 캐릭터 6종 — 몸/팔/다리 형태는 동일, 모자·가방 컬러 & 헤드 이펙트로 다양화 */
   const VARIANTS = [
@@ -1299,15 +1437,7 @@
   }
 
   /* ───── 2.5 Reviews (후기) 렌더 ───── */
-  const REVIEWS = [
-    "팀원들이 다함께 모여, 바이브코딩을 통해 완결성을 가진 서비스를 개발해 본 의미있는 시간이었습니다. 정해진 시간 내 목표를 달성하기 위해 서로 가진 활용팁을 공유하고 막히는 부분에서 의견을 공유하며, 혼자 했더라면 막연했을 작업을 수월하게 할 수 있었습니다.",
-    "클로드에 대해 단순히 설명만 듣는 것보다 실습 중심으로 진행되다 보니 이해도가 훨씬 높았습니다. 직접 만들어보면서 AI 활용 감각을 빠르게 익힐 수 있었던 것 같고, 특히 팀원들과 함께 사용해보니 헷갈리는 것이나 고민 하는 과정에서 아이디어도 많이 나왔던 것 같습니다. 개인적으로는 클로드를 업무에 어떻게 연결할 수 있을지 구체적으로 고민해보는 계기가 됐습니다.",
-    "해커톤을 하면서 클로드를 처음 써보았는데 기대보다 더 체계적이고 디테일하게 기획부터 상세 실행까지 진행할 수 있어서 매우 신세계였습니다. 아이디어만 있다면 못할것이 없다는걸 다시 한번 깨닫게 되었습니다.",
-    "새로운 수단을 활용해서 어떻게, 얼마나 대단한 것을 만들어내야할지 걱정만 앞서다가 막상 시도해보니 생각보다 아주 쉽게, 상상했던 것 보다 더 대단한 결과가 나와서 놀랐습니다. 사람을 대체할 그날이 예상보다 아주 빨리 올 것 같아 저의 앞날이 걱정입니다….",
-    "해커톤을 통해 클로드를 활용한 바이브코딩을 해보니, 왜 이걸 그동안 '딸깍'이라고 표현했는지를 알게되었고, 왜 진작 해보지 않았을까라는 생각이 들었다. 그리고 한편으론, 한 때 개발자를 할 것은 아니지만 개발을 배워볼까라고 생각한 채 책을 사고 한장도 펴지 않았던 나 자신을 기억하며, 정말 잘 했던 일이라는 생각이 들었다.",
-    "IDE에 있는 새까만 화면을 보면 막연히 두렵고 무서워서 클로드코드는 개발자만을 위한 툴인 줄 알았는데, 생각했던 걸 실제 구현하고 테스트하며 완성해가는 과정은 신세계였습니다. 생각보다 수월하게 단시간에 익힐 수 있어서 계속 무언가를 만들고 싶어졌습니다. 즐거운 시간이었습니다.",
-    "비록 3시간 동안 약식으로 진행됐지만, 목적만큼은 분명했습니다. AI에 진입장벽을 느끼는 팀원 모두의 허들을 낮추는 것. 도구도 의도적으로 Claude Code와 Claude AI로 좁혔습니다. 초기 세팅부터 어려워하는 분들도 있었지만, 다들 금세 적응했고 각자 떠올린 아이템을 그 자리에서 직접 만들어냈습니다. 결과적으로 팀 전원이 AI의 문턱을 한 단계씩 낮추는 계기가 되었고, 정말 의미 있는 시간이었습니다."
-  ];
+  const REVIEWS = [];
 
   /* 얼굴만 보이는 아바타 SVG — 모자 포함, 가방/팔/다리 제외 */
   function makeClawdFaceSvg(v) {
@@ -1331,21 +1461,52 @@
   const shuffledBgs = AVATAR_BG_POOL.slice().sort(() => Math.random() - 0.5);
 
   const bubbleListEl = document.getElementById('bubble-list');
-  REVIEWS.forEach((text, i) => {
-    const side = i % 2 === 0 ? 'left' : 'right';
-    const variant = VARIANTS[i % VARIANTS.length];
-    const bg = shuffledBgs[i % shuffledBgs.length];
-    bubbleListEl.insertAdjacentHTML('beforeend', `
-      <div class="bubble-row ${side}">
-        <div class="bubble-avatar" style="background:${bg}">${makeClawdFaceSvg(variant)}</div>
-        <div class="bubble" data-text="${text.replace(/"/g, '&quot;')}"></div>
-      </div>
-    `);
-  });
+  // 하드코딩 더미는 UX Insight 팀에 귀속
+  const HARDCODED_REVIEWS = REVIEWS.map(text => ({ text, team: 'UX Insight' }));
+  // ALL 탭 진입 시 한 번만 셔플하고 유지
+  let ALL_REVIEW_ORDER = null;
 
-  document.querySelectorAll('.bubble[data-text]').forEach(el => {
-    el.textContent = el.dataset.text;
-  });
+  function getTeamReviews() {
+    // 팀별 후기: 더미(UX Insight 한정) + DB 아이템 후기 (등록 순서 = sort_order)
+    const dbReviews = ITEMS
+      .filter(it => !it.empty && it.review && it.review.trim())
+      .map(it => ({ text: it.review.trim(), team: it.team || 'UX Insight', sort_order: it.sort_order ?? 0 }));
+    return [...HARDCODED_REVIEWS, ...dbReviews];
+  }
+
+  function renderBubbles() {
+    bubbleListEl.innerHTML = '';
+    const all = getTeamReviews();
+    const filter = TEAM_FILTER;
+    let list;
+    if (filter === 'all') {
+      // 한 번 셔플 → 캐시
+      if (!ALL_REVIEW_ORDER || ALL_REVIEW_ORDER.length !== all.length) {
+        ALL_REVIEW_ORDER = all.slice().sort(() => Math.random() - 0.5);
+      }
+      list = ALL_REVIEW_ORDER;
+    } else {
+      // 해당 팀만, 등록 순서대로 (sort_order 오름차순; 더미는 sort_order 없으니 앞에)
+      list = all
+        .filter(r => r.team === filter)
+        .sort((a, b) => (a.sort_order ?? -1) - (b.sort_order ?? -1));
+    }
+    list.forEach((r, i) => {
+      const side = i % 2 === 0 ? 'left' : 'right';
+      const variant = VARIANTS[i % VARIANTS.length];
+      const bg = shuffledBgs[i % shuffledBgs.length];
+      bubbleListEl.insertAdjacentHTML('beforeend', `
+        <div class="bubble-row ${side}">
+          <div class="bubble-avatar" style="background:${bg}">${makeClawdFaceSvg(variant)}</div>
+          <div class="bubble" data-text="${r.text.replace(/"/g, '&quot;')}"></div>
+        </div>
+      `);
+    });
+    bubbleListEl.querySelectorAll('.bubble[data-text]').forEach(el => {
+      el.textContent = el.dataset.text;
+    });
+  }
+  renderBubbles();
 
   /* ───── 3. Carousel 렌더 ───── */
   const slidesEl = document.getElementById('slides');
@@ -1360,23 +1521,64 @@
       <div class="thumb-chrome-url"></div>
     </div>`;
 
-  ITEMS.forEach((it, i) => {
-    const thumbInner = it.thumb ? `<img src="${it.thumb}" alt="${it.title}">` : 'Thumbnail';
-    const variant = VARIANTS[i % VARIANTS.length];
-    slidesEl.insertAdjacentHTML('beforeend', `
-      <div class="slide">
-        <h2 class="slide-title">${it.title}</h2>
-        <p class="slide-subtitle${it.subtitle ? '' : ' is-placeholder'}">${it.subtitle || '짧은 소개 한 줄'}</p>
-        <div class="slide-stage">
-          <div class="slide-thumb" data-url="${it.url}">
-            ${CHROME_FRAME}
-            <div class="slide-thumb-body">${thumbInner}</div>
+  const carouselEl = document.querySelector('.carousel');
+  const SLIDE_TRANS = 'transform 0.85s cubic-bezier(0.34, 1.2, 0.64, 1)';
+  let cur = 1; // 첫 진짜 슬라이드 (앞 클론 다음)
+  let HERO_ITEMS = [];
+
+  // 히어로용 더미 3개 (is_hero 등록된 게 없을 때 폴백)
+  const HERO_DUMMIES = [
+    { title: 'Hero Item 1', subtitle: '히어로로 등록된 아이템이 여기 표시됩니다', url: '', thumb: '', empty: true },
+    { title: 'Hero Item 2', subtitle: '히어로로 등록된 아이템이 여기 표시됩니다', url: '', thumb: '', empty: true },
+    { title: 'Hero Item 3', subtitle: '히어로로 등록된 아이템이 여기 표시됩니다', url: '', thumb: '', empty: true },
+  ];
+
+  function getHeroItems() {
+    const flagged = ITEMS.filter(it => !it.empty && !it.review_only && it.is_hero);
+    // is_hero 등록된 아이템이 있으면 그것만, 없으면 더미 3개
+    return flagged.length > 0 ? flagged : HERO_DUMMIES;
+  }
+
+  function renderCarousel() {
+    HERO_ITEMS = getHeroItems();
+    slidesEl.innerHTML = '';
+    HERO_ITEMS.forEach((it, i) => {
+      const thumbInner = it.thumb ? `<img src="${it.thumb}" alt="${it.title}">` : 'Thumbnail';
+      const variant = VARIANTS[i % VARIANTS.length];
+      slidesEl.insertAdjacentHTML('beforeend', `
+        <div class="slide">
+          <h2 class="slide-title">${it.title}</h2>
+          <p class="slide-subtitle${it.subtitle ? '' : ' is-placeholder'}">${it.subtitle || '짧은 소개 한 줄'}</p>
+          <div class="slide-stage">
+            <div class="slide-thumb" data-url="${it.url}">
+              ${CHROME_FRAME}
+              <div class="slide-thumb-body">${thumbInner}</div>
+            </div>
+            <div class="slide-clawd">${makeClawdSvg(variant)}</div>
           </div>
-          <div class="slide-clawd">${makeClawdSvg(variant)}</div>
         </div>
-      </div>
-    `);
-  });
+      `);
+    });
+    // 무한 루프 클론
+    const firstClone = slidesEl.firstElementChild.cloneNode(true);
+    const lastClone  = slidesEl.lastElementChild.cloneNode(true);
+    slidesEl.appendChild(firstClone);
+    slidesEl.insertBefore(lastClone, slidesEl.firstElementChild);
+    cur = 1;
+    slidesEl.style.transition = 'none';
+    slidesEl.style.transform  = `translateX(-${cur * 100}%)`;
+    void slidesEl.offsetWidth;
+    slidesEl.style.transition = SLIDE_TRANS;
+    randomizeTilt();
+  }
+
+  function randomizeTilt() {
+    slidesEl.querySelectorAll('.slide-stage').forEach(s => {
+      s.style.setProperty('--stage-tilt', (Math.random() * 24 - 12).toFixed(1) + 'deg');
+    });
+  }
+
+  renderCarousel();
 
   /* clawd 눈동자 마우스 추적 (slide별 SVG 좌표계 기준) */
   window.addEventListener('pointermove', (e) => {
@@ -1400,23 +1602,9 @@
     });
   });
 
-  /* 무한 루프: 첫/마지막 슬라이드를 양끝에 클론 → 클론 도착 후 무전환 스냅 */
-  const firstClone = slidesEl.firstElementChild.cloneNode(true);
-  const lastClone  = slidesEl.lastElementChild.cloneNode(true);
-  slidesEl.appendChild(firstClone);
-  slidesEl.insertBefore(lastClone, slidesEl.firstElementChild);
-
-  const carouselEl = document.querySelector('.carousel');
-  const SLIDE_TRANS = 'transform 0.85s cubic-bezier(0.34, 1.2, 0.64, 1)';
-  let cur = 1; // 첫 진짜 슬라이드 (앞 클론 다음)
-  slidesEl.style.transition = 'none';
-  slidesEl.style.transform  = `translateX(-${cur * 100}%)`;
-  void slidesEl.offsetWidth;
-  slidesEl.style.transition = SLIDE_TRANS;
-
   let locked = false;
   function step(delta) {
-    if (locked) return;
+    if (locked || HERO_ITEMS.length <= 1) return;
     locked = true;
     cur += delta;
     slidesEl.style.transition = SLIDE_TRANS;
@@ -1430,27 +1618,19 @@
       locked = false;
       carouselEl.classList.remove('is-walking');
       // 클론 지점이면 무전환으로 실제 위치로 스냅
-      if (cur === ITEMS.length + 1) {
+      if (cur === HERO_ITEMS.length + 1) {
         slidesEl.style.transition = 'none';
         cur = 1;
         slidesEl.style.transform = `translateX(-${cur * 100}%)`;
         void slidesEl.offsetWidth;
       } else if (cur === 0) {
         slidesEl.style.transition = 'none';
-        cur = ITEMS.length;
+        cur = HERO_ITEMS.length;
         slidesEl.style.transform = `translateX(-${cur * 100}%)`;
         void slidesEl.offsetWidth;
       }
     }, 870);
   }
-  // 각 슬라이드 스테이지에 -12~+12deg 랜덤 기울기 주입 (으쌰으쌰 피크에 적용됨)
-  function randomizeTilt() {
-    slidesEl.querySelectorAll('.slide-stage').forEach(s => {
-      s.style.setProperty('--stage-tilt', (Math.random() * 24 - 12).toFixed(1) + 'deg');
-    });
-  }
-  randomizeTilt();
-
   let autoT = null;
   function autoStart() {
     clearInterval(autoT);
@@ -1698,23 +1878,56 @@
     if (cur !== null) items.push(cur);
     return `<ul class="card-desc">${items.map(t => `<li>${escHtml(t)}</li>`).join('')}</ul>`;
   }
+  const DUMMY_ITEMS_BY_TEAM = {
+    UX1: Array.from({ length: 3 }, (_, i) => makeEmpty(i, 'UX1')),
+    UX2: Array.from({ length: 3 }, (_, i) => makeEmpty(i, 'UX2')),
+  };
+  // ALL 탭에서 사용할 셔플된 인덱스 (한 번 섞고 유지)
+  let RANDOM_ORDER = ITEMS.map((_, i) => i).sort(() => Math.random() - 0.5);
+  function reshuffleAllOrder() {
+    RANDOM_ORDER = ITEMS.map((_, i) => i).sort(() => Math.random() - 0.5);
+  }
+
   function renderGrid() {
     gridEl.innerHTML = '';
-    ITEMS.forEach((it, idx) => {
+    const isAdmin = document.body.classList.contains('admin-on');
+    const isSuper = document.body.classList.contains('super-admin-on');
+    const allowReorder = TEAM_FILTER !== 'all'; // ALL에서는 순서 편집 불가
+
+    // 표시할 인덱스 결정
+    let indices;
+    if (TEAM_FILTER === 'all') {
+      indices = RANDOM_ORDER.filter(i => !ITEMS[i].empty && !ITEMS[i].review_only);
+    } else if (TEAM_FILTER === 'UX1' || TEAM_FILTER === 'UX2') {
+      indices = ITEMS.map((_, i) => i).filter(i => !ITEMS[i].empty && !ITEMS[i].review_only && ITEMS[i].team === TEAM_FILTER);
+    } else {
+      // UX Insight: 빈 placeholder 포함, review-only는 제외
+      indices = ITEMS.map((_, i) => i).filter(i => !ITEMS[i].review_only && ITEMS[i].team === TEAM_FILTER);
+    }
+
+    indices.forEach((idx) => {
+      const it = ITEMS[idx];
       const isEmpty = it.empty;
       const thumb = it.thumb ? `<img src="${escHtml(it.thumb)}" alt="${escHtml(it.title)}">` : '';
-      const isAdmin = document.body.classList.contains('admin-on');
       const tag = isAdmin || !it.url || it.url === '#' ? 'div' : 'a';
       const hrefAttr = tag === 'a' ? `href="${escHtml(it.url)}" target="_blank" rel="noopener"` : '';
-      const adminCtrls = isAdmin ? `
-        <div class="card-admin">
+      const reorderBtns = (isAdmin && allowReorder) ? `
           <button class="card-admin-btn" data-act="up"   data-i="${idx}" aria-label="위로">${ICONS.up}</button>
-          <button class="card-admin-btn" data-act="down" data-i="${idx}" aria-label="아래로">${ICONS.down}</button>
+          <button class="card-admin-btn" data-act="down" data-i="${idx}" aria-label="아래로">${ICONS.down}</button>` : '';
+      const adminCtrls = isAdmin ? `
+        <div class="card-admin">${reorderBtns}
           <button class="card-admin-btn" data-act="edit" data-i="${idx}" aria-label="편집">${ICONS.edit}</button>
           <button class="card-admin-btn" data-act="del"  data-i="${idx}" aria-label="삭제">${ICONS.trash}</button>
         </div>` : '';
+      // 히어로 체크박스 (수퍼 어드민 전용, 실아이템만)
+      const heroToggle = (isSuper && !isEmpty && it.id) ? `
+        <label class="card-hero-toggle" title="히어로 영역에 노출">
+          <input type="checkbox" class="card-hero-checkbox" data-id="${escHtml(it.id)}" ${it.is_hero ? 'checked' : ''}>
+          <span>Hero</span>
+        </label>` : '';
       gridEl.insertAdjacentHTML('beforeend', `
         <${tag} class="card ${isEmpty ? 'is-empty' : ''}" ${hrefAttr}>
+          ${heroToggle}
           <div class="card-thumb">${thumb}</div>
           <h3 class="card-title">${escHtml(it.title || 'Item')}</h3>
           ${formatDesc(it.desc)}
@@ -1722,8 +1935,38 @@
         </${tag}>
       `);
     });
+
+    // UX1/UX2 더미 (실아이템 없을 때만)
+    if ((TEAM_FILTER === 'UX1' || TEAM_FILTER === 'UX2') && indices.length === 0) {
+      DUMMY_ITEMS_BY_TEAM[TEAM_FILTER].forEach((it) => {
+        gridEl.insertAdjacentHTML('beforeend', `
+          <div class="card is-empty">
+            <div class="card-thumb"></div>
+            <h3 class="card-title">${escHtml(it.title)}</h3>
+          </div>
+        `);
+      });
+    }
   }
   renderGrid();
+
+  const teamTabsEl = document.getElementById('team-tabs');
+  if (teamTabsEl) {
+    teamTabsEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('.team-tab');
+      if (!btn) return;
+      const team = btn.dataset.team;
+      if (team === TEAM_FILTER) return;
+      TEAM_FILTER = team;
+      teamTabsEl.querySelectorAll('.team-tab').forEach(t => {
+        const active = t.dataset.team === team;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      renderGrid();
+      renderBubbles();
+    });
+  }
 
   /* ───── 로딩 오버레이 숨기기 ─────
      캐러셀/그리드 렌더 + 폰트 로드 + 첫 페인트 모두 끝난 뒤에 페이드아웃 → 레이아웃 settling 가림 */
@@ -1744,6 +1987,7 @@
 
   /* ───── 5. Admin 모드 (로그인 + 편집/재정렬/삭제) ───── */
   const ADMIN_PW = 'MAU800';
+  const SUPER_PW = 'mau800s'; // 수퍼 어드민: 히어로 등록 권한 추가
   const loginModal = document.getElementById('login-modal');
   const editModal  = document.getElementById('edit-modal');
   const adminBtn   = document.getElementById('admin-btn');
@@ -1767,7 +2011,9 @@
     if (document.body.classList.contains('admin-on')) {
       // 이미 로그인 상태면 로그아웃
       document.body.classList.remove('admin-on');
+      document.body.classList.remove('super-admin-on');
       sessionStorage.removeItem('adminOn');
+      sessionStorage.removeItem('superAdminOn');
       updateAdminBtnLabel();
       renderGrid();
     } else {
@@ -1787,9 +2033,15 @@
   document.getElementById('login-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const pw = document.getElementById('login-pw').value;
-    if (pw.toUpperCase() === ADMIN_PW.toUpperCase()) {
+    const isSuper = pw === SUPER_PW;
+    const isAdmin = pw.toUpperCase() === ADMIN_PW.toUpperCase();
+    if (isSuper || isAdmin) {
       document.body.classList.add('admin-on');
       sessionStorage.setItem('adminOn', '1');
+      if (isSuper) {
+        document.body.classList.add('super-admin-on');
+        sessionStorage.setItem('superAdminOn', '1');
+      }
       closeModal(loginModal);
       updateAdminBtnLabel();
       renderGrid();
@@ -1801,6 +2053,9 @@
   // 새로고침 후 세션 복원
   if (sessionStorage.getItem('adminOn') === '1') {
     document.body.classList.add('admin-on');
+    if (sessionStorage.getItem('superAdminOn') === '1') {
+      document.body.classList.add('super-admin-on');
+    }
     renderGrid();
   }
   updateAdminBtnLabel();
@@ -1920,6 +2175,36 @@
     renderGrid();
   }
 
+  // 히어로 체크박스: 클릭 전파 차단 + DB 업데이트 + 캐러셀 재렌더
+  gridEl.addEventListener('click', (e) => {
+    const heroLabel = e.target.closest('.card-hero-toggle');
+    if (heroLabel) e.stopPropagation(); // 카드 링크/편집 클릭으로 번지지 않게
+  });
+  gridEl.addEventListener('change', async (e) => {
+    const cb = e.target.closest('.card-hero-checkbox');
+    if (!cb) return;
+    const id = cb.dataset.id;
+    const checked = cb.checked;
+    const item = ITEMS.find(it => String(it.id) === String(id));
+    if (!item) return;
+    item.is_hero = checked;
+    try {
+      const { error } = await sb.from('items').update({ is_hero: checked }).eq('id', id);
+      if (error) {
+        // 컬럼이 없거나 권한 이슈 시 롤백 + 안내
+        item.is_hero = !checked;
+        cb.checked = !checked;
+        alert('히어로 등록 실패: ' + error.message + '\n(items 테이블에 is_hero 컬럼이 없으면 SQL을 먼저 실행해야 합니다)');
+        return;
+      }
+      renderCarousel();
+    } catch (err) {
+      item.is_hero = !checked;
+      cb.checked = !checked;
+      alert('히어로 등록 실패: ' + (err?.message || err));
+    }
+  });
+
   gridEl.addEventListener('click', async (e) => {
     const btn = e.target.closest('.card-admin-btn');
     if (!btn) return;
@@ -1941,7 +2226,9 @@
       ITEMS.splice(i, 1);
       while (ITEMS.length < 6) ITEMS.push(makeEmpty(ITEMS.length));
       ITEMS.forEach((it, idx) => { if (it.empty) it.title = `Item ${idx + 1}`; });
+      reshuffleAllOrder();
       renderGrid();
+      renderCarousel();
     } else if (act === 'edit') {
       editIdx = i;
       originalEditThumbUrl = ITEMS[i].thumb || '';
@@ -1949,10 +2236,29 @@
       document.getElementById('edit-subtitle').value = ITEMS[i].subtitle || '';
       document.getElementById('edit-desc').value     = ITEMS[i].desc     || '';
       document.getElementById('edit-url').value      = ITEMS[i].url      || '';
+      document.getElementById('edit-review').value   = ITEMS[i].review   || '';
+      // 팀 탭 활성화
+      const curTeam = ITEMS[i].team || 'UX Insight';
+      EDIT_TEAM = curTeam;
+      document.querySelectorAll('#edit-team-tabs .modal-team-tab').forEach(t => {
+        const active = t.dataset.team === curTeam;
+        t.classList.toggle('is-active', active);
+      });
       setEditThumbPreview(ITEMS[i].thumb || '', '');
       if (ITEMS[i].thumb) editThumbLabel.textContent = '이미지 변경';
       openModal(editModal);
     }
+  });
+
+  // 편집 모달 — 팀 탭 클릭
+  let EDIT_TEAM = 'UX Insight';
+  document.getElementById('edit-team-tabs').addEventListener('click', (e) => {
+    const btn = e.target.closest('.modal-team-tab');
+    if (!btn) return;
+    EDIT_TEAM = btn.dataset.team;
+    document.querySelectorAll('#edit-team-tabs .modal-team-tab').forEach(t => {
+      t.classList.toggle('is-active', t.dataset.team === EDIT_TEAM);
+    });
   });
   document.getElementById('edit-cancel').addEventListener('click', () => closeModal(editModal));
   document.getElementById('edit-save').addEventListener('click', async () => {
@@ -1961,6 +2267,8 @@
     const subtitle = document.getElementById('edit-subtitle').value.trim();
     const desc     = document.getElementById('edit-desc').value.trim();
     const url      = document.getElementById('edit-url').value.trim();
+    const review   = document.getElementById('edit-review').value.trim();
+    const team     = EDIT_TEAM;
     const fallbackTitle = `Item ${editIdx + 1}`;
     const cur = ITEMS[editIdx];
     const saveBtn = document.getElementById('edit-save');
@@ -1979,15 +2287,15 @@
       } else if (!editThumbDataUrl) {
         thumb_url = '';
       }
-      const isEmpty = !title && !subtitle && !desc && !thumb_url && !url;
+      const isEmpty = !title && !subtitle && !desc && !thumb_url && !url && !review;
       const payload = {
         title: title || fallbackTitle,
-        subtitle, desc, url, thumb_url
+        subtitle, desc, url, thumb_url, team, review
       };
       if (cur.id) {
         const { error } = await sb.from('items').update(payload).eq('id', cur.id);
         if (error) throw error;
-        Object.assign(cur, { title: payload.title, subtitle, desc, url, thumb: thumb_url, empty: isEmpty });
+        Object.assign(cur, { title: payload.title, subtitle, desc, url, thumb: thumb_url, empty: isEmpty, team, review });
       } else {
         // 빈 슬롯에서 편집한 경우 — 새 row insert
         if (isEmpty) {
@@ -2000,12 +2308,18 @@
             id: data.id,
             title: data.title, subtitle: data.subtitle || '', desc: data.desc || '',
             url: data.url || '', thumb: data.thumb_url || '',
-            sort_order: data.sort_order ?? 0, empty: false
+            sort_order: data.sort_order ?? 0, empty: false,
+            team: data.team || 'UX Insight',
+            is_hero: !!data.is_hero,
+            review: data.review || ''
           };
+          reshuffleAllOrder();
         }
       }
       closeModal(editModal);
       renderGrid();
+      renderCarousel();
+      renderBubbles();
     } catch (err) {
       console.error(err);
       alert('저장 실패: ' + (err?.message || err));
