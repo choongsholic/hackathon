@@ -167,6 +167,10 @@ hackathon/
 - **+ 버튼 비번 게이트**: `.fab-register` 클릭 시 admin-on이 아니면 기존 Login 모달 띄우고 통과 시 register.html로 이동. `postLoginAction` 콜백 패턴으로 admin 토글 로그인과 등록 진입 로그인을 같은 모달로 통합 — 코드 중복 없음. 모달 타이틀 "Admin 로그인" → "Log-in"으로 통일
 - **남은 보안 갭**: register.html을 URL 직접 입력으로 접근하면 게이트 우회됨 (브라우저단 sessionStorage.adminOn 검사 추가 필요 시 후속)
 
+### 히어로 캐러셀 랜덤 순서 (2026-05-21)
+- `getHeroItems()`에서 `is_hero` 필터된 아이템을 `.sort(() => Math.random() - 0.5)`로 셔플 → 새로고침할 때마다 히어로 순서 랜덤 재정렬
+- 더미 폴백(히어로 미등록 시 3개)은 고정 순서 유지. ALL 그리드 `RANDOM_ORDER` 셔플과 동일 방식
+
 ---
 
 ## 집에 가서 이어서 할 작업

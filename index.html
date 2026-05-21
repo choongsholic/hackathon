@@ -1535,8 +1535,8 @@
 
   function getHeroItems() {
     const flagged = ITEMS.filter(it => !it.empty && !it.review_only && it.is_hero);
-    // is_hero 등록된 아이템이 있으면 그것만, 없으면 더미 3개
-    return flagged.length > 0 ? flagged : HERO_DUMMIES;
+    // is_hero 등록된 아이템이 있으면 그것만(매번 랜덤 셔플), 없으면 더미 3개
+    return flagged.length > 0 ? flagged.sort(() => Math.random() - 0.5) : HERO_DUMMIES;
   }
 
   function renderCarousel() {
