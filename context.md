@@ -5,7 +5,7 @@ UXI Hackathon 결과물 소개 페이지.
 - 메인: `index.html` (히어로 + 캐러셀 + 아이템 그리드)
 - 등록: `register.html` (아이템 등록 폼)
 - 백엔드: Supabase (DB + Storage)
-- 호스팅: Netlify (https://uxilog.netlify.app)
+- 호스팅: Netlify (https://uxlab-hack.netlify.app, 구 uxilog.netlify.app에서 이름 변경)
 
 ## 파일 구조
 ```
@@ -170,6 +170,11 @@ hackathon/
 ### 히어로 캐러셀 랜덤 순서 (2026-05-21)
 - `getHeroItems()`에서 `is_hero` 필터된 아이템을 `.sort(() => Math.random() - 0.5)`로 셔플 → 새로고침할 때마다 히어로 순서 랜덤 재정렬
 - 더미 폴백(히어로 미등록 시 3개)은 고정 순서 유지. ALL 그리드 `RANDOM_ORDER` 셔플과 동일 방식
+
+### 카드 그리드 칸 폭 불균형 수정 (2026-05-21)
+- 증상: 아이템 그리드에서 칸마다 썸네일 폭/좌우 마진이 다름 (긴 제목 행에서 특히)
+- 원인: grid 아이템 기본 `min-width:auto`라 `.card-title`의 `white-space:nowrap` 제목 폭이 칸 최소폭이 되어 `1fr` 균등분할을 깨뜨림 (slide의 min-width:0 버그와 동일)
+- 수정: `.card`에 `min-width: 0` 추가 → 칸 균등 + 긴 제목 ellipsis 정상 작동. object-fit:cover라 이미지 비율은 무관
 
 ---
 

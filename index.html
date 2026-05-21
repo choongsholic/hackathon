@@ -437,6 +437,7 @@
     text-decoration: none;
     color: #000;
     display: block;
+    min-width: 0; /* grid 아이템 기본 min-width:auto가 nowrap 타이틀 폭만큼 칸을 늘려 1fr 균등분할을 깨는 것 차단 (slide와 동일 버그) */
     transition: transform 0.25s ease;
   }
   .card:hover { transform: translateY(-4px); }
